@@ -1,6 +1,6 @@
 body {
     text-align: center;
-    font-family: "Segoe UI Black", Arial, sans-serif;
+    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     background-color: #ffffff;
@@ -18,7 +18,7 @@ body {
 
 h1 {
     color: black;
-    -webkit-text-stroke: 2px white;
+    font-family: Arial, sans-serif;
 }
 
 .buttons {
@@ -35,7 +35,7 @@ h1 {
     border: 2px solid #000000;
     padding: 16px 32px;
     font-size: 24px;
-    font-family: 'Segoe UI Black', Arial, sans-serif;
+    font-family: Arial, sans-serif;
     border-radius: 90px;
     cursor: pointer;
     transition: 0.3s;
@@ -60,10 +60,12 @@ h1 {
 .news-item h3 {
     color: #000;
     margin-top: 0;
+    font-family: Arial, sans-serif;
 }
 
 .news-item p {
     color: #1e1e1e;
+    font-family: Arial, sans-serif;
 }
 
 .winpe-info {
@@ -87,10 +89,12 @@ h1 {
 .winpe-version h3, .winpe-features h3 {
     color: #000;
     margin-top: 0;
+    font-family: Arial, sans-serif;
 }
 
 .winpe-version p, .winpe-features li {
-    color: #333;
+    color: #555;
+    font-family: Arial, sans-serif;
 }
 
 .winpe-features ul {
@@ -104,6 +108,7 @@ h1 {
 
 .note {
     font-size: 12px;
-    color: #999;
+    color: #555;
     margin-top: 10px;
+    font-family: Arial, sans-serif;
 }
