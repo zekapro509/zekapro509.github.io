@@ -4,16 +4,7 @@
     <meta charset="UTF-8">
     <title>Новости - TLC zekapro509</title>
     <link rel="stylesheet" href="../style.css">
-    <script>
-        (function() {
-            const theme = localStorage.getItem('theme');
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark-theme');
-            }
-        })();
-    </script>
     <style>
-        /* Кнопка назад (слева) */
         .back-btn {
             position: fixed;
             top: 20px;
@@ -31,8 +22,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0;
-            line-height: 1;
             text-decoration: none;
         }
         .back-btn:hover {
@@ -40,54 +29,16 @@
             color: #000000;
             border: 2px solid #000000;
         }
-        /* Тёмная тема для кнопки назад */
-        html.dark-theme .back-btn {
-            background-color: #ffffff;
-            color: #000000;
-            border: 2px solid #000000;
-        }
-        html.dark-theme .back-btn:hover {
-            background-color: #000000;
-            color: #ffffff;
-            border: 2px solid #ffffff;
-        }
     </style>
 </head>
 <body>
     <a href="../" class="back-btn">←</a>
-    <button class="theme-toggle" id="theme-toggle">☀</button>
 
     <h1>Новости</h1>
 
     <div id="news-container"></div>
 
     <script>
-        // Тёмная тема
-        const toggleButton = document.getElementById('theme-toggle');
-        function setTheme(isDark) {
-            if (isDark) {
-                document.documentElement.classList.add('dark-theme');
-                toggleButton.textContent = '☾';
-            } else {
-                document.documentElement.classList.remove('dark-theme');
-                toggleButton.textContent = '☀';
-            }
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        }
-
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            setTheme(true);
-        } else {
-            setTheme(false);
-        }
-
-        toggleButton.onclick = function() {
-            const isDark = document.documentElement.classList.contains('dark-theme');
-            setTheme(!isDark);
-        };
-
-        // Загрузка новостей
         async function loadNews() {
             try {
                 const response = await fetch('news.json?t=' + Date.now());
@@ -106,8 +57,7 @@
                     container.innerHTML = '<p>Новостей пока нет.</p>';
                 }
             } catch (error) {
-                console.error(error);
-                document.getElementById('news-container').innerHTML = '<p>Ошибка загрузки новостей. Проверь файл news.json</p>';
+                document.getElementById('news-container').innerHTML = '<p>Ошибка загрузки новостей.</p>';
             }
         }
         loadNews();
