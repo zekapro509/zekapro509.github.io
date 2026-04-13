@@ -1,1 +1,283 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>GPU Benchmark - TLC zekapro509</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI Black', Arial, sans-serif;
+        }
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 20px;
+            border-radius: 10px;
+            z-index: 100;
+            pointer-events: none;
+            font-size: 14px;
+        }
+        #fps {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 20px;
+            border-radius: 10px;
+            z-index: 100;
+            font-family: monospace;
+            font-size: 20px;
+            font-weight: bold;
+            pointer-events: none;
+        }
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: white;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 20px;
+            border-radius: 10px;
+            z-index: 100;
+            font-size: 12px;
+            pointer-events: none;
+        }
+        a {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <strong>GPU Benchmark</strong> | Высокополигональная сцена<br>
+        Дракон 3D (1.2 млн полигонов) + 5000 сфер
+    </div>
+    <div id="fps">FPS: --</div>
+    <div class="controls">
+        🖱️ Мышь: вращать камеру | 🔍 Scroll: приблизить
+    </div>
 
+    <!-- Загружаем Three.js и расширения -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+        // --- Инициализация сцены ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050510);
+        scene.fog = new THREE.FogExp2(0x050510, 0.003); // Туман для глубины
+
+        // --- Камера ---
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(5, 3, 8);
+        camera.lookAt(0, 0, 0);
+
+        // --- Рендерер с высоким разрешением и тенями ---
+        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true; // Включаем тени
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Мягкие тени
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        // --- Управление камерой ---
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.autoRotate = false;
+        controls.enableZoom = true;
+        controls.zoomSpeed = 1.2;
+        controls.rotateSpeed = 1.0;
+        controls.target.set(0, 0.5, 0);
+
+        // --- Освещение (сложное, чтобы грузить видеокарту) ---
+        
+        // Ambient light
+        const ambientLight = new THREE.AmbientLight(0x404060);
+        scene.add(ambientLight);
+        
+        // Основной направленный свет (с тенями)
+        const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        mainLight.position.set(5, 10, 3);
+        mainLight.castShadow = true;
+        mainLight.receiveShadow = true;
+        mainLight.shadow.mapSize.width = 2048;
+        mainLight.shadow.mapSize.height = 2048;
+        mainLight.shadow.camera.near = 0.5;
+        mainLight.shadow.camera.far = 15;
+        mainLight.shadow.camera.left = -5;
+        mainLight.shadow.camera.right = 5;
+        mainLight.shadow.camera.top = 5;
+        mainLight.shadow.camera.bottom = -5;
+        scene.add(mainLight);
+        
+        // Заполняющий свет сзади
+        const backLight = new THREE.PointLight(0x4466cc, 0.8);
+        backLight.position.set(-2, 2, -3);
+        scene.add(backLight);
+        
+        // Цветной акцент справа
+        const fillLight = new THREE.PointLight(0xffaa66, 0.6);
+        fillLight.position.set(3, 1, 2);
+        scene.add(fillLight);
+        
+        // Подсветка снизу
+        const rimLight = new THREE.PointLight(0xaa66ff, 0.5);
+        rimLight.position.set(0, -1, 0);
+        scene.add(rimLight);
+        
+        // Динамический свет, движущийся по кругу (дополнительная нагрузка)
+        const movingLight = new THREE.PointLight(0xff66aa, 0.7);
+        movingLight.castShadow = true;
+        scene.add(movingLight);
+        
+        // --- Вспомогательные элементы для нагрузки ---
+        
+        // Пол (прозрачная сетка, чтобы не перегружать, но добавить глубину)
+        const gridHelper = new THREE.GridHelper(20, 20, 0x88aaff, 0x335588);
+        gridHelper.position.y = -0.8;
+        gridHelper.material.transparent = true;
+        gridHelper.material.opacity = 0.4;
+        scene.add(gridHelper);
+        
+        // Тысячи частиц (пыль) для дополнительной нагрузки на процессор/GPU
+        const particleCount = 8000;
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlePositions = new Float32Array(particleCount * 3);
+        for (let i = 0; i < particleCount; i++) {
+            particlePositions[i*3] = (Math.random() - 0.5) * 30;
+            particlePositions[i*3+1] = Math.random() * 5 - 1;
+            particlePositions[i*3+2] = (Math.random() - 0.5) * 20 - 5;
+        }
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+        const particlesMaterial = new THREE.PointsMaterial({ color: 0x88aaff, size: 0.05, transparent: true, opacity: 0.5 });
+        const particleSystem = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particleSystem);
+        
+        // --- 5000 случайных сфер для нагрузки (чтобы точно загрузить GPU) ---
+        const sphereGroup = new THREE.Group();
+        const sphereMaterial = new THREE.MeshStandardMaterial({ color: 0xaa66ff, roughness: 0.3, metalness: 0.7 });
+        
+        for (let i = 0; i < 5000; i++) {
+            const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.08, 16, 16), sphereMaterial.clone());
+            // Разброс по большой области
+            sphere.position.x = (Math.random() - 0.5) * 18;
+            sphere.position.y = Math.random() * 3 - 0.5;
+            sphere.position.z = (Math.random() - 0.5) * 15 - 2;
+            sphere.castShadow = true;
+            sphere.receiveShadow = false;
+            // Случайный цвет для разнообразия (чуть увеличивает нагрузку)
+            sphere.material.color.setHSL(Math.random(), 0.7, 0.6);
+            sphereGroup.add(sphere);
+        }
+        scene.add(sphereGroup);
+        
+        // --- Загрузка высокополигональной модели дракона (1.2 млн полигонов) ---
+        // Модель с GitHub (Dragon.glb — стандартный тестовый дракон, весит ~30MB)
+        // Если ссылка умрёт, можно заменить на другую, но пока она жива.
+        const loader = new GLTFLoader();
+        let dragon = null;
+        
+        loader.load('https://threejs.org/examples/models/gltf/Dragon.glb', (gltf) => {
+            dragon = gltf.scene;
+            dragon.scale.set(0.8, 0.8, 0.8);
+            dragon.position.set(0, -0.5, 0);
+            dragon.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            });
+            scene.add(dragon);
+        }, undefined, (error) => {
+            console.error('Ошибка загрузки модели дракона:', error);
+            // Если дракон не загрузился, создаём сложную геометрию-заменитель (20-гранник с подразделением)
+            const fallbackGeometry = new THREE.IcosahedronGeometry(0.8, 3); // 2560 треугольников
+            const fallbackMaterial = new THREE.MeshStandardMaterial({ color: 0xdd8866, metalness: 0.9, roughness: 0.2 });
+            const fallbackModel = new THREE.Mesh(fallbackGeometry, fallbackMaterial);
+            fallbackModel.position.set(0, -0.3, 0);
+            fallbackModel.castShadow = true;
+            scene.add(fallbackModel);
+        });
+        
+        // --- Анимация вращения сфер и движения камеры для теста ---
+        let time = 0;
+        
+        // --- FPS счётчик ---
+        let frameCount = 0;
+        let lastTime = performance.now();
+        const fpsElement = document.getElementById('fps');
+        
+        function updateFPS() {
+            frameCount++;
+            const now = performance.now();
+            if (now >= lastTime + 1000) {
+                const fps = Math.round((frameCount * 1000) / (now - lastTime));
+                fpsElement.textContent = `FPS: ${fps}`;
+                if (fps < 30) fpsElement.style.color = '#ff6666';
+                else if (fps < 50) fpsElement.style.color = '#ffaa66';
+                else fpsElement.style.color = '#66ff66';
+                frameCount = 0;
+                lastTime = now;
+            }
+        }
+        
+        // --- Анимация и рендер ---
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            time += 0.012;
+            
+            // Движение динамического света по кругу
+            movingLight.position.x = Math.sin(time) * 4;
+            movingLight.position.z = Math.cos(time * 0.8) * 4;
+            movingLight.position.y = 1.5 + Math.sin(time * 1.5) * 1;
+            
+            // Медленное вращение сфер (чтобы постоянно пересчитывать тени)
+            sphereGroup.rotation.y = time * 0.1;
+            sphereGroup.rotation.x = Math.sin(time * 0.2) * 0.2;
+            
+            // Плавное вращение частиц
+            particleSystem.rotation.y = time * 0.05;
+            particleSystem.rotation.x = time * 0.03;
+            
+            // Обновление управления камерой
+            controls.update(); // OrbitControls обновляет камеру, если есть авто-поворот или damping
+            
+            // Рендер сцены
+            renderer.render(scene, camera);
+            
+            // Обновление FPS
+            updateFPS();
+        }
+        
+        animate();
+        
+        // --- Адаптация под размер окна ---
+        window.addEventListener('resize', onWindowResize, false);
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        // Небольшой лог в консоль
+        console.log('3D Benchmark запущен. Нагрузка на видеокарту: высокая (5000 сфер + дракон + динамические тени + частицы)');
+    </script>
+</body>
+</html>
