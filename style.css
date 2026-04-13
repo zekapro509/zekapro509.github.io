@@ -219,3 +219,51 @@ html.dark-theme .winpe-features li {
 html.dark-theme .note {
     color: #777;
 }
+
+/* Админ-панель */
+.admin-btn {
+    background-color: #000000;
+    color: #ffffff;
+    border: 2px solid #000000;
+    padding: 8px 16px;
+    font-size: 16px;
+    font-family: 'Segoe UI Black', Arial, sans-serif;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin: 10px;
+}
+
+.admin-btn:hover {
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+}
+
+.admin-input {
+    padding: 8px;
+    margin: 10px;
+    width: 80%;
+    max-width: 400px;
+    border: 2px solid #000000;
+    border-radius: 10px;
+    font-family: Arial, sans-serif;
+}
+
+html.dark-theme .admin-input {
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+    border: 2px solid #ffffff;
+}
+
+html.dark-theme .admin-btn {
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+}
+
+html.dark-theme .admin-btn:hover {
+    background-color: #000000;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+}
