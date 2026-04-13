@@ -1,1 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>GPU Benchmark Medium - TLC zekapro509</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI Black', Arial, sans-serif;
+        }
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 20px;
+            border-radius: 10px;
+            z-index: 100;
+            pointer-events: none;
+            font-size: 14px;
+        }
+        #fps {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 20px;
+            border-radius: 10px;
+            z-index: 100;
+            font-family: monospace;
+            font-size: 20px;
+            font-weight: bold;
+            pointer-events: none;
+        }
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: white;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 20px;
+            border-radius: 10px;
+            z-index: 100;
+            font-size: 12px;
+            pointer-events: none;
+        }
+        .back-link {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: white;
+            background: rgba(0,0,0,0.7);
+            padding: 8px 16px;
+            border-radius: 20px;
+            z-index: 100;
+            text-decoration: none;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <strong>GPU Benchmark MEDIUM</strong> | 2500 сфер в форме шара
+    </div>
+    <div id="fps">FPS: --</div>
+    <div class="controls">🖱️ Мышь: вращать камеру | 🔍 Scroll: приблизить</div>
+    <a href="../" class="back-link">← Назад к выбору</a>
 
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050510);
+        scene.fog = new THREE.FogExp2(0x050510, 0.002);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(5, 4, 8);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.enableZoom = true;
+        controls.zoomSpeed = 1.2;
+        controls.rotateSpeed = 1.0;
+        controls.target.set(0, 0, 0);
+
+        // Освещение
+        const ambientLight = new THREE.AmbientLight(0x404060);
+        scene.add(ambientLight);
+        
+        const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        mainLight.position.set(5, 10, 3);
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.width = 2048;
+        mainLight.shadow.mapSize.height = 2048;
+        scene.add(mainLight);
+        
+        const backLight = new THREE.PointLight(0x4466cc, 0.6);
+        backLight.position.set(-2, 2, -3);
+        scene.add(backLight);
+        
+        const fillLight = new THREE.PointLight(0xffaa66, 0.5);
+        fillLight.position.set(3, 1, 2);
+        scene.add(fillLight);
+        
+        const rimLight = new THREE.PointLight(0xaa66ff, 0.4);
+        rimLight.position.set(0, -1, 0);
+        scene.add(rimLight);
+        
+        const movingLight = new THREE.PointLight(0xff66aa, 0.7);
+        movingLight.castShadow = true;
+        scene.add(movingLight);
+
+        // 2500 сфер в форме шара
+        const sphereGroup = new THREE.Group();
+        const radius = 2.5;
+        const count = 2500;
+        
+        for (let i = 0; i < count; i++) {
+            const u = Math.random();
+            const v = Math.random();
+            const theta = 2 * Math.PI * u;
+            const phi = Math.acos(2 * v - 1);
+            const r = radius * (0.7 + Math.random() * 0.6);
+            const x = r * Math.sin(phi) * Math.cos(theta);
+            const y = r * Math.sin(phi) * Math.sin(theta);
+            const z = r * Math.cos(phi);
+            const size = 0.08 + Math.random() * 0.06;
+            const sphere = new THREE.Mesh(
+                new THREE.SphereGeometry(size, 24, 24),
+                new THREE.MeshStandardMaterial({ roughness: 0.3, metalness: 0.7 })
+            );
+            sphere.position.set(x, y, z);
+            sphere.castShadow = true;
+            sphere.material.color.setHSL(Math.random(), 0.9, 0.6);
+            sphereGroup.add(sphere);
+        }
+        scene.add(sphereGroup);
+
+        let time = 0;
+        let frameCount = 0;
+        let lastTime = performance.now();
+        const fpsElement = document.getElementById('fps');
+        
+        function updateFPS() {
+            frameCount++;
+            const now = performance.now();
+            if (now >= lastTime + 1000) {
+                const fps = Math.round((frameCount * 1000) / (now - lastTime));
+                fpsElement.textContent = `FPS: ${fps}`;
+                if (fps < 30) fpsElement.style.color = '#ff6666';
+                else if (fps < 50) fpsElement.style.color = '#ffaa66';
+                else fpsElement.style.color = '#66ff66';
+                frameCount = 0;
+                lastTime = now;
+            }
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.015;
+            movingLight.position.x = Math.sin(time) * 5;
+            movingLight.position.z = Math.cos(time * 0.7) * 5;
+            movingLight.position.y = 1.5 + Math.sin(time * 1.3) * 1.2;
+            sphereGroup.rotation.y = time * 0.08;
+            sphereGroup.rotation.x = Math.sin(time * 0.2) * 0.2;
+            controls.update();
+            renderer.render(scene, camera);
+            updateFPS();
+        }
+        
+        animate();
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
