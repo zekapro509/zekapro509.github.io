@@ -4,30 +4,6 @@
     <meta charset="UTF-8">
     <title>GPU Benchmark - TLC zekapro509</title>
     <style>
-        /* Скрываем страницу до применения темы */
-        html {
-            visibility: hidden;
-        }
-        html.dark-theme,
-        html:not(.dark-theme) {
-            visibility: visible;
-        }
-    </style>
-    <script>
-        // Применяем тему ДО того, как страница станет видимой
-        (function() {
-            const theme = localStorage.getItem('theme');
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark-theme');
-                document.body.classList.add('dark-theme');
-            } else {
-                document.body.classList.remove('dark-theme');
-            }
-            // Показываем страницу
-            document.documentElement.style.visibility = 'visible';
-        })();
-    </script>
-    <style>
         body {
             margin: 0;
             min-height: 100vh;
@@ -43,15 +19,18 @@
         }
         .menu {
             text-align: center;
-            background: rgba(0,0,0,0.7);
+            background: transparent;
             padding: 40px;
-            border-radius: 20px;
-            backdrop-filter: blur(5px);
+            border-radius: 0;
+            backdrop-filter: none;
         }
         h1 {
-            color: white;
+            color: #000000;
             margin-bottom: 40px;
             font-size: 32px;
+        }
+        body.dark-theme h1 {
+            color: #ffffff;
         }
         .buttons {
             display: flex;
@@ -62,7 +41,7 @@
         .bench-btn {
             background-color: #000000;
             color: #ffffff;
-            border: 2px solid #ffffff;
+            border: 2px solid #000000;
             padding: 16px 48px;
             font-size: 24px;
             font-family: 'Segoe UI Black', Arial, sans-serif;
@@ -78,10 +57,23 @@
             color: #000000;
             border: 2px solid #000000;
         }
+        body.dark-theme .bench-btn {
+            background-color: #ffffff;
+            color: #000000;
+            border: 2px solid #000000;
+        }
+        body.dark-theme .bench-btn:hover {
+            background-color: #000000;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+        }
         .note {
-            color: #aaa;
+            color: #333;
             margin-top: 40px;
             font-size: 14px;
+        }
+        body.dark-theme .note {
+            color: #aaa;
         }
         a {
             text-decoration: none;
@@ -158,6 +150,15 @@
             border: 2px solid #ffffff;
         }
     </style>
+    <script>
+        // Применяем тему ДО отрисовки
+        (function() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
+            }
+        })();
+    </script>
 </head>
 <body>
     <a href="../" class="back-btn">←</a>
@@ -170,7 +171,7 @@
             <a href="medium/"><button class="bench-btn">Medium (2500 сфер)</button></a>
             <a href="high/"><button class="bench-btn">High (5000 сфер)</button></a>
         </div>
-        <div class="note">Выберите уровень нагрузки для теста видеокарты</div>
+        <div class="note">Выбери уровень нагрузки для теста видеокарты</div>
     </div>
 
     <script>
