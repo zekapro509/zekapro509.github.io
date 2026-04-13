@@ -14,23 +14,24 @@
     </script>
 </head>
 <body>
-    <button class="theme-toggle" id="theme-toggle">☀</button>
+    <!-- Кнопки в правом верхнем углу -->
+    <div class="top-buttons">
+        <button id="adminIconBtn" class="icon-btn" style="display:none;">🔒</button>
+        <button class="theme-toggle" id="theme-toggle">☀</button>
+    </div>
 
     <h1>Новости</h1>
 
-    <!-- Кнопка входа для админа -->
-    <div id="adminPanel">
-        <button id="adminLoginBtn" class="admin-btn">Вход для админа</button>
-    </div>
-
-    <!-- Форма входа (скрыта по умолчанию) -->
-    <div id="loginForm" style="display:none;">
-        <input type="password" id="adminPassword" placeholder="Пароль" class="admin-input">
+    <!-- Форма входа (простое окно, появляется при нажатии на пиктограмму до входа) -->
+    <div id="loginOverlay" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:20px; border-radius:10px; z-index:1001; box-shadow:0 0 10px rgba(0,0,0,0.5);">
+        <h3>Вход для админа</h3>
+        <input type="password" id="adminPassword" placeholder="Пароль" class="admin-input"><br>
         <button id="loginSubmitBtn" class="admin-btn">Войти</button>
-        <p id="loginError" style="color:red; display:none;">Неверный пароль или токен</p>
+        <button id="closeLoginBtn" class="admin-btn">Отмена</button>
+        <p id="loginError" style="color:red; display:none;">Неверный пароль</p>
     </div>
 
-    <!-- Форма добавления новости (скрыта по умолчанию) -->
+    <!-- Форма добавления новости (появляется после входа) -->
     <div id="newsForm" style="display:none;">
         <h3>Добавить новость</h3>
         <input type="text" id="newsTitle" placeholder="Заголовок" class="admin-input"><br>
@@ -58,22 +59,27 @@
         // Загружаем новости
         async function loadNews() {
             try {
-                const response = await fetch(NEWS_FILE_PATH);
+                const response = await fetch(NEWS_FILE_PATH + '?t=' + new Date().getTime());
+                if (!response.ok) throw new Error('Файл не найден');
                 const data = await response.json();
                 const container = document.getElementById('news-container');
                 container.innerHTML = '';
-                data.news.forEach(news => {
-                    const newsBlock = document.createElement('div');
-                    newsBlock.className = 'news-item';
-                    newsBlock.innerHTML = `
-                        <h3>${news.date} — ${news.title}</h3>
-                        <p>${news.content}</p>
-                    `;
-                    container.appendChild(newsBlock);
-                });
+                if (data.news && data.news.length > 0) {
+                    data.news.forEach(news => {
+                        const newsBlock = document.createElement('div');
+                        newsBlock.className = 'news-item';
+                        newsBlock.innerHTML = `
+                            <h3>${news.date} — ${news.title}</h3>
+                            <p>${news.content}</p>
+                        `;
+                        container.appendChild(newsBlock);
+                    });
+                } else {
+                    container.innerHTML = '<p>Новостей пока нет.</p>';
+                }
             } catch (error) {
                 console.error('Ошибка загрузки новостей:', error);
-                document.getElementById('news-container').innerHTML = '<p>Не удалось загрузить новости. Попробуйте позже.</p>';
+                document.getElementById('news-container').innerHTML = '<p>Не удалось загрузить новости. Убедись, что файл news-data.json существует и имеет правильный формат.</p>';
             }
         }
 
@@ -81,11 +87,6 @@
         function saveToken(token) {
             localStorage.setItem(GITHUB_TOKEN_KEY, token);
             githubToken = token;
-        }
-
-        // Получаем токен из localStorage
-        function getStoredToken() {
-            return localStorage.getItem(GITHUB_TOKEN_KEY);
         }
 
         // Добавляем новость через GitHub API
@@ -110,7 +111,7 @@
             });
             
             if (!fileResponse.ok) {
-                document.getElementById('publishStatus').innerText = 'Ошибка: не удалось загрузить файл новостей.';
+                document.getElementById('publishStatus').innerText = 'Ошибка: не удалось загрузить файл новостей. Проверь токен.';
                 return false;
             }
 
@@ -145,32 +146,49 @@
                 }, 5000);
                 return true;
             } else {
-                document.getElementById('publishStatus').innerText = 'Ошибка при публикации. Попробуйте ещё раз.';
+                document.getElementById('publishStatus').innerText = 'Ошибка при публикации. Попробуй ещё раз.';
                 return false;
             }
         }
 
+        // Проверяем, есть ли сохранённый токен
+        const storedToken = localStorage.getItem(GITHUB_TOKEN_KEY);
+        if (storedToken) {
+            githubToken = storedToken;
+            document.getElementById('adminIconBtn').style.display = 'flex';
+        } else {
+            document.getElementById('adminIconBtn').style.display = 'flex';
+        }
+
         // Обработчики событий
-        document.getElementById('adminLoginBtn').onclick = () => {
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('adminLoginBtn').style.display = 'none';
+        document.getElementById('adminIconBtn').onclick = () => {
+            if (githubToken) {
+                // Если уже вошли, показываем форму добавления
+                document.getElementById('newsForm').style.display = 'block';
+            } else {
+                // Если не вошли, показываем форму входа
+                document.getElementById('loginOverlay').style.display = 'block';
+            }
+        };
+
+        document.getElementById('closeLoginBtn').onclick = () => {
+            document.getElementById('loginOverlay').style.display = 'none';
         };
 
         document.getElementById('loginSubmitBtn').onclick = () => {
             const password = document.getElementById('adminPassword').value;
             if (password === ADMIN_PASSWORD) {
-                const token = getStoredToken();
+                const token = localStorage.getItem(GITHUB_TOKEN_KEY);
                 if (token) {
                     githubToken = token;
-                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('loginOverlay').style.display = 'none';
                     document.getElementById('newsForm').style.display = 'block';
-                    document.getElementById('publishStatus').innerHTML = '';
                 } else {
                     const newToken = prompt('Введите ваш GitHub токен (Personal Access Token)');
                     if (newToken) {
                         saveToken(newToken);
                         githubToken = newToken;
-                        document.getElementById('loginForm').style.display = 'none';
+                        document.getElementById('loginOverlay').style.display = 'none';
                         document.getElementById('newsForm').style.display = 'block';
                         document.getElementById('publishStatus').innerHTML = '';
                     }
@@ -189,12 +207,6 @@
             }
             addNews(title, content);
         };
-
-        // Загружаем токен при старте
-        const storedToken = getStoredToken();
-        if (storedToken) {
-            githubToken = storedToken;
-        }
 
         // Загружаем новости
         loadNews();
