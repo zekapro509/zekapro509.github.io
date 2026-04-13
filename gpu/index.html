@@ -4,57 +4,43 @@
     <meta charset="UTF-8">
     <title>GPU Benchmark - TLC zekapro509</title>
     <style>
-        /* Системная тема по умолчанию (без скриптов) */
-        body {
+        /* Базовые стили (светлая тема по умолчанию) */
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #ffffff;
+            font-family: 'Segoe UI Black', Arial, sans-serif;
             min-height: 100vh;
-            background-color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Segoe UI Black', Arial, sans-serif;
-            transition: 0.3s;
+            transition: background 0.2s ease;
         }
-        /* Автоматическая тёмная тема, если система в тёмной теме */
-        @media (prefers-color-scheme: dark) {
-            body {
-                background-color: #1a1a1a;
-            }
-            h1 {
-                color: #ffffff;
-            }
-            .note {
-                color: #aaa;
-            }
-        }
-        /* Класс для ручного переключения (перебивает системную) */
-        body.dark-theme {
-            background-color: #1a1a1a;
-        }
-        body.dark-theme h1 {
-            color: #ffffff;
-        }
-        body.dark-theme .note {
-            color: #aaa;
-        }
-        .menu {
+
+        .container {
             text-align: center;
-            background: transparent;
-            padding: 40px;
+            padding: 20px;
         }
+
         h1 {
-            color: #000000;
+            font-size: 36px;
             margin-bottom: 40px;
-            font-size: 32px;
+            color: #000000;
         }
+
         .buttons {
             display: flex;
             flex-direction: column;
             gap: 20px;
             align-items: center;
         }
-        .bench-btn {
-            background-color: #000000;
+
+        .btn {
+            background: #000000;
             color: #ffffff;
             border: 2px solid #000000;
             padding: 16px 48px;
@@ -62,212 +48,159 @@
             font-family: 'Segoe UI Black', Arial, sans-serif;
             border-radius: 90px;
             cursor: pointer;
-            transition: 0.3s;
-            width: 250px;
+            transition: all 0.2s ease;
+            width: 280px;
+            text-align: center;
             text-decoration: none;
             display: inline-block;
         }
-        .bench-btn:hover {
-            background-color: #ffffff;
+
+        .btn:hover {
+            background: #ffffff;
             color: #000000;
             border: 2px solid #000000;
         }
-        /* Тёмная тема для кнопок */
-        @media (prefers-color-scheme: dark) {
-            .bench-btn {
-                background-color: #ffffff;
-                color: #000000;
-                border: 2px solid #000000;
-            }
-            .bench-btn:hover {
-                background-color: #000000;
-                color: #ffffff;
-                border: 2px solid #ffffff;
-            }
-        }
-        body.dark-theme .bench-btn {
-            background-color: #ffffff;
-            color: #000000;
-            border: 2px solid #000000;
-        }
-        body.dark-theme .bench-btn:hover {
-            background-color: #000000;
-            color: #ffffff;
-            border: 2px solid #ffffff;
-        }
+
         .note {
-            color: #333;
             margin-top: 40px;
             font-size: 14px;
+            color: #555;
         }
-        a {
-            text-decoration: none;
-        }
-        .theme-toggle {
+
+        /* Фиксированные кнопки в углах */
+        .fixed-btn {
             position: fixed;
             top: 20px;
-            right: 20px;
-            background-color: #000000;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #000000;
             color: #ffffff;
             border: 2px solid #000000;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            font-size: 26px;
+            font-size: 24px;
             cursor: pointer;
-            transition: 0.3s;
-            z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0;
-            line-height: 1;
+            transition: all 0.2s ease;
+            z-index: 1000;
         }
-        .theme-toggle:hover {
-            background-color: #ffffff;
+
+        .fixed-btn:hover {
+            background: #ffffff;
             color: #000000;
             border: 2px solid #000000;
         }
-        @media (prefers-color-scheme: dark) {
-            .theme-toggle {
-                background-color: #ffffff;
-                color: #000000;
-                border: 2px solid #000000;
-            }
-            .theme-toggle:hover {
-                background-color: #000000;
-                color: #ffffff;
-                border: 2px solid #ffffff;
-            }
+
+        .back-btn {
+            left: 20px;
+            text-decoration: none;
         }
-        body.dark-theme .theme-toggle {
-            background-color: #ffffff;
+
+        .theme-toggle {
+            right: 20px;
+        }
+
+        /* Тёмная тема — применяется через класс на body */
+        body.dark {
+            background: #1a1a1a;
+        }
+
+        body.dark h1 {
+            color: #ffffff;
+        }
+
+        body.dark .btn {
+            background: #ffffff;
             color: #000000;
             border: 2px solid #000000;
         }
-        body.dark-theme .theme-toggle:hover {
-            background-color: #000000;
+
+        body.dark .btn:hover {
+            background: #000000;
             color: #ffffff;
             border: 2px solid #ffffff;
         }
-        .back-btn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background-color: #000000;
-            color: #ffffff;
-            border: 2px solid #000000;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            transition: 0.3s;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            line-height: 1;
-            text-decoration: none;
+
+        body.dark .note {
+            color: #aaaaaa;
         }
-        .back-btn:hover {
-            background-color: #ffffff;
+
+        body.dark .fixed-btn {
+            background: #ffffff;
             color: #000000;
             border: 2px solid #000000;
         }
-        @media (prefers-color-scheme: dark) {
-            .back-btn {
-                background-color: #ffffff;
-                color: #000000;
-                border: 2px solid #000000;
-            }
-            .back-btn:hover {
-                background-color: #000000;
-                color: #ffffff;
-                border: 2px solid #ffffff;
-            }
-        }
-        body.dark-theme .back-btn {
-            background-color: #ffffff;
-            color: #000000;
-            border: 2px solid #000000;
-        }
-        body.dark-theme .back-btn:hover {
-            background-color: #000000;
+
+        body.dark .fixed-btn:hover {
+            background: #000000;
             color: #ffffff;
             border: 2px solid #ffffff;
         }
     </style>
+
     <script>
-        // Проверяем, была ли тема выбрана вручную ранее
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            document.body.classList.add('dark-theme');
-        } else if (savedTheme === 'light') {
-            document.body.classList.remove('dark-theme');
-        }
-        // Если сохранённой темы нет, оставляем системную (через CSS)
+        (function() {
+            // 1. Смотрим на сохранённые настройки
+            const saved = localStorage.getItem('theme');
+            if (saved === 'dark') {
+                document.body.classList.add('dark');
+            } else if (saved === 'light') {
+                document.body.classList.remove('dark');
+            } else {
+                // 2. Если нет сохранёнки — используем системную тему
+                const darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (darkMode) {
+                    document.body.classList.add('dark');
+                }
+            }
+        })();
     </script>
 </head>
 <body>
-    <a href="../" class="back-btn">←</a>
-    <button class="theme-toggle" id="theme-toggle">☀</button>
+    <!-- Кнопки -->
+    <a href="../" class="fixed-btn back-btn">←</a>
+    <button class="fixed-btn theme-toggle" id="themeToggle">☀</button>
 
-    <div class="menu">
+    <div class="container">
         <h1>GPU Benchmark</h1>
         <div class="buttons">
-            <a href="low/"><button class="bench-btn">Low (1000 сфер)</button></a>
-            <a href="medium/"><button class="bench-btn">Medium (2500 сфер)</button></a>
-            <a href="high/"><button class="bench-btn">High (5000 сфер)</button></a>
+            <a href="low/" class="btn">Low (1000 сфер)</a>
+            <a href="medium/" class="btn">Medium (2500 сфер)</a>
+            <a href="high/" class="btn">High (5000 сфер)</a>
         </div>
-        <div class="note">Выбери уровень нагрузки для теста видеокарты</div>
+        <div class="note">Выберите уровень нагрузки для теста видеокарты</div>
     </div>
 
     <script>
-        const toggleButton = document.getElementById('theme-toggle');
-        
-        function updateButtonAppearance() {
-            const isDark = document.body.classList.contains('dark-theme') || 
-                          (window.matchMedia('(prefers-color-scheme: dark)').matches && !localStorage.getItem('theme'));
-            if (isDark) {
-                toggleButton.textContent = '☾';
+        const toggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        function updateThemeIcon() {
+            if (body.classList.contains('dark')) {
+                toggle.textContent = '☾';
             } else {
-                toggleButton.textContent = '☀';
+                toggle.textContent = '☀';
             }
-        }
-        
-        function setTheme(isDark) {
-            if (isDark) {
-                document.body.classList.add('dark-theme');
-                localStorage.setItem('theme', 'dark');
-            } else {
-                document.body.classList.remove('dark-theme');
-                localStorage.setItem('theme', 'light');
-            }
-            updateButtonAppearance();
         }
 
-        // Начальная установка кнопки
-        updateButtonAppearance();
-        
-        toggleButton.onclick = function() {
-            const isDark = document.body.classList.contains('dark-theme') || 
-                          (window.matchMedia('(prefers-color-scheme: dark)').matches && !localStorage.getItem('theme'));
-            setTheme(!isDark);
-        };
-        
-        // Следим за изменением системной темы (если пользователь не выбрал вручную)
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (!localStorage.getItem('theme')) {
-                if (e.matches) {
-                    document.body.classList.add('dark-theme');
-                } else {
-                    document.body.classList.remove('dark-theme');
-                }
-                updateButtonAppearance();
+        function setTheme(isDark) {
+            if (isDark) {
+                body.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
             }
+            updateThemeIcon();
+        }
+
+        toggle.addEventListener('click', () => {
+            const willBeDark = !body.classList.contains('dark');
+            setTheme(willBeDark);
         });
+
+        updateThemeIcon();
     </script>
 </body>
 </html>
