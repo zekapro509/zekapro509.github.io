@@ -3,6 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>GPU Benchmark - TLC zekapro509</title>
+    <script>
+        // Супер-быстрое применение темы ДО любого рендеринга
+        (function() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') {
+                document.documentElement.style.backgroundColor = '#1a1a1a';
+                document.body.style.backgroundColor = '#1a1a1a';
+            } else {
+                document.documentElement.style.backgroundColor = '#ffffff';
+                document.body.style.backgroundColor = '#ffffff';
+            }
+        })();
+    </script>
     <style>
         body {
             margin: 0;
@@ -127,7 +140,6 @@
         }
     </style>
     <script>
-        // Применяем тему ДО отрисовки страницы
         (function() {
             const theme = localStorage.getItem('theme');
             if (theme === 'dark') {
@@ -147,11 +159,10 @@
             <a href="medium/"><button class="bench-btn">Medium (2500 сфер)</button></a>
             <a href="high/"><button class="bench-btn">High (5000 сфер)</button></a>
         </div>
-        <div class="note">Выбери уровень нагрузки для теста видеокарты</div>
+        <div class="note">Выберите уровень нагрузки для теста видеокарты</div>
     </div>
 
     <script>
-        // Тёмная тема для интерактива
         const toggleButton = document.getElementById('theme-toggle');
         function setTheme(isDark) {
             if (isDark) {
