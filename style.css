@@ -1,4 +1,3 @@
-/* Основные стили body */
 body {
     text-align: center;
     font-family: "Segoe UI Black", Arial, sans-serif;
@@ -6,7 +5,6 @@ body {
     padding: 0;
     background-color: #ffffff;
     color: #000000;
-    transition: 0.3s;
 }
 
 .white-text {
@@ -19,11 +17,10 @@ body {
 }
 
 h1 {
-    color: white;
-    -webkit-text-stroke: 2px black;
+    color: black;
+    -webkit-text-stroke: 2px white;
 }
 
-/* Контейнер для кнопок — вертикальное расположение */
 .buttons {
     display: flex;
     flex-direction: column;
@@ -32,7 +29,6 @@ h1 {
     margin: 20px 0;
 }
 
-/* Стиль для обычных кнопок */
 .news-btn {
     background-color: #000000;
     color: #ffffff;
@@ -52,7 +48,6 @@ h1 {
     border: 2px solid #000000;
 }
 
-/* Стили для постов новостей (светлая тема) */
 .news-item {
     text-align: left;
     max-width: 600px;
@@ -71,73 +66,6 @@ h1 {
     color: #1e1e1e;
 }
 
-/* Кнопка-пиктограмма для темы */
-.theme-toggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: #000000;
-    color: #ffffff;
-    border: 2px solid #000000;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    font-size: 26px;
-    cursor: pointer;
-    transition: 0.3s;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    line-height: 1;
-}
-
-.theme-toggle:hover {
-    background-color: #ffffff;
-    color: #000000;
-    border: 2px solid #000000;
-}
-
-/* Верхние кнопки (админ и тема) */
-.top-buttons {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    display: flex;
-    gap: 10px;
-    z-index: 1000;
-}
-
-.icon-btn {
-    background-color: #000000;
-    color: #ffffff;
-    border: 2px solid #000000;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    font-size: 24px;
-    cursor: pointer;
-    transition: 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-}
-
-.icon-btn:hover {
-    background-color: #ffffff;
-    color: #000000;
-    border: 2px solid #000000;
-}
-
-/* Убираем точки списка на странице WinPe */
-.winpe-features ul {
-    list-style: none;
-    padding-left: 0;
-}
-
-/* Стили для страницы WinPe */
 .winpe-info {
     display: flex;
     justify-content: center;
@@ -167,6 +95,7 @@ h1 {
 
 .winpe-features ul {
     padding-left: 20px;
+    list-style: none;
 }
 
 .download-section {
@@ -177,176 +106,4 @@ h1 {
     font-size: 12px;
     color: #999;
     margin-top: 10px;
-}
-
-/* Админ-панель */
-.admin-btn {
-    background-color: #000000;
-    color: #ffffff;
-    border: 2px solid #000000;
-    padding: 8px 16px;
-    font-size: 16px;
-    font-family: 'Segoe UI Black', Arial, sans-serif;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: 0.3s;
-    margin: 10px;
-}
-
-.admin-btn:hover {
-    background-color: #ffffff;
-    color: #000000;
-    border: 2px solid #000000;
-}
-
-.admin-input {
-    padding: 8px;
-    margin: 10px;
-    width: 80%;
-    max-width: 400px;
-    border: 2px solid #000000;
-    border-radius: 10px;
-    font-family: Arial, sans-serif;
-}
-
-/* Тёмная тема */
-html.dark-theme body {
-    background-color: #1a1a1a;
-    color: #f0f0f0;
-}
-
-html.dark-theme .news-btn {
-    background-color: #ffffff;
-    color: #000000;
-    border: 2px solid #000000;
-}
-
-html.dark-theme .news-btn:hover {
-    background-color: #000000;
-    color: #ffffff;
-    border: 2px solid #ffffff;
-}
-
-html.dark-theme .news-item {
-    background-color: #2c2c2c;
-}
-
-html.dark-theme .news-item h3 {
-    color: #f0f0f0;
-}
-
-html.dark-theme .news-item p {
-    color: #dddddd;
-}
-
-html.dark-theme .theme-toggle {
-    background-color: #ffffff;
-    color: #000000;
-    border: 2px solid #000000;
-}
-
-html.dark-theme .theme-toggle:hover {
-    background-color: #000000;
-    color: #ffffff;
-    border: 2px solid #ffffff;
-}
-
-html.dark-theme .icon-btn {
-    background-color: #ffffff;
-    color: #000000;
-    border: 2px solid #000000;
-}
-
-html.dark-theme .icon-btn:hover {
-    background-color: #000000;
-    color: #ffffff;
-    border: 2px solid #ffffff;
-}
-
-html.dark-theme button:not(.theme-toggle):not(.icon-btn) {
-    background-color: #ffffff;
-    color: #000000;
-    border: 2px solid #000000;
-}
-
-html.dark-theme button:not(.theme-toggle):not(.icon-btn):hover {
-    background-color: #000000;
-    color: #ffffff;
-    border: 2px solid #ffffff;
-}
-
-html.dark-theme .winpe-version,
-html.dark-theme .winpe-features {
-    background-color: #2c2c2c;
-}
-
-html.dark-theme .winpe-version h3,
-html.dark-theme .winpe-features h3 {
-    color: #f0f0f0;
-}
-
-html.dark-theme .winpe-version p,
-html.dark-theme .winpe-features li {
-    color: #dddddd;
-}
-
-html.dark-theme .note {
-    color: #777;
-}
-
-html.dark-theme .admin-input {
-    background-color: #1a1a1a;
-    color: #f0f0f0;
-    border: 2px solid #ffffff;
-}
-
-html.dark-theme .admin-btn {
-    background-color: #ffffff;
-    color: #000000;
-    border: 2px solid #000000;
-}
-
-html.dark-theme .admin-btn:hover {
-    background-color: #000000;
-    color: #ffffff;
-    border: 2px solid #ffffff;
-}
-
-/* Кнопка админа (слева) */
-.admin-icon-btn {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    background-color: #000000;
-    color: #ffffff;
-    border: 2px solid #000000;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    font-size: 24px;
-    cursor: pointer;
-    transition: 0.3s;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-}
-
-.admin-icon-btn:hover {
-    background-color: #ffffff;
-    color: #000000;
-    border: 2px solid #000000;
-}
-
-html.dark-theme .admin-icon-btn {
-    background-color: #ffffff;
-    color: #000000;
-    border: 2px solid #000000;
-}
-
-html.dark-theme .admin-icon-btn:hover {
-    background-color: #000000;
-    color: #ffffff;
-    border: 2px solid #ffffff;
 }
