@@ -12,8 +12,49 @@
             }
         })();
     </script>
+    <style>
+        /* Кнопка назад (слева) */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #000000;
+            color: #ffffff;
+            border: 2px solid #000000;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            transition: 0.3s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            line-height: 1;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            background-color: #ffffff;
+            color: #000000;
+            border: 2px solid #000000;
+        }
+        /* Тёмная тема для кнопки назад */
+        html.dark-theme .back-btn {
+            background-color: #ffffff;
+            color: #000000;
+            border: 2px solid #000000;
+        }
+        html.dark-theme .back-btn:hover {
+            background-color: #000000;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+        }
+    </style>
 </head>
 <body>
+    <a href="../" class="back-btn">←</a>
     <button class="theme-toggle" id="theme-toggle">☀</button>
 
     <h1>WinPe от TLC zekapro509</h1>
@@ -48,10 +89,31 @@
         <p class="note">*Файл на Google Диске. Нажми на кнопку, затем «Скачать».</p>
     </div>
 
-    <a href="../">
-        <button class="news-btn">На главную</button>
-    </a>
+    <script>
+        // Тёмная тема
+        const toggleButton = document.getElementById('theme-toggle');
+        function setTheme(isDark) {
+            if (isDark) {
+                document.documentElement.classList.add('dark-theme');
+                toggleButton.textContent = '☾';
+            } else {
+                document.documentElement.classList.remove('dark-theme');
+                toggleButton.textContent = '☀';
+            }
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
 
-    <script src="../script.js"></script>
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            setTheme(true);
+        } else {
+            setTheme(false);
+        }
+
+        toggleButton.onclick = function() {
+            const isDark = document.documentElement.classList.contains('dark-theme');
+            setTheme(!isDark);
+        };
+    </script>
 </body>
 </html>
