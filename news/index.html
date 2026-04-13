@@ -5,7 +5,6 @@
     <title>Новости - TLC zekapro509</title>
     <link rel="stylesheet" href="../style.css">
     <script>
-        // Применяем тему ДО отрисовки страницы
         (function() {
             const theme = localStorage.getItem('theme');
             if (theme === 'dark') {
@@ -19,6 +18,27 @@
 
     <h1>Новости</h1>
 
+    <!-- Кнопка входа для админа -->
+    <div id="adminPanel">
+        <button id="adminLoginBtn" class="admin-btn">Вход для админа</button>
+    </div>
+
+    <!-- Форма входа (скрыта по умолчанию) -->
+    <div id="loginForm" style="display:none;">
+        <input type="password" id="adminPassword" placeholder="Пароль" class="admin-input">
+        <button id="loginSubmitBtn" class="admin-btn">Войти</button>
+        <p id="loginError" style="color:red; display:none;">Неверный пароль или токен</p>
+    </div>
+
+    <!-- Форма добавления новости (скрыта по умолчанию) -->
+    <div id="newsForm" style="display:none;">
+        <h3>Добавить новость</h3>
+        <input type="text" id="newsTitle" placeholder="Заголовок" class="admin-input"><br>
+        <textarea id="newsContent" placeholder="Текст новости" rows="4" class="admin-input"></textarea><br>
+        <button id="publishBtn" class="admin-btn">Опубликовать новость</button>
+        <p id="publishStatus"></p>
+    </div>
+
     <div id="news-container"></div>
 
     <a href="../">
@@ -26,10 +46,22 @@
     </a>
 
     <script>
-        fetch('news-data.json')
-            .then(response => response.json())
-            .then(data => {
+        // Конфигурация
+        const REPO_OWNER = "zekapro509";
+        const REPO_NAME = "zekapro509.github.io";
+        const NEWS_FILE_PATH = "news/news-data.json";
+        const GITHUB_TOKEN_KEY = "github_token";
+        const ADMIN_PASSWORD = "Admin123"; // Смени на свой пароль!
+
+        let githubToken = null;
+
+        // Загружаем новости
+        async function loadNews() {
+            try {
+                const response = await fetch(NEWS_FILE_PATH);
+                const data = await response.json();
                 const container = document.getElementById('news-container');
+                container.innerHTML = '';
                 data.news.forEach(news => {
                     const newsBlock = document.createElement('div');
                     newsBlock.className = 'news-item';
@@ -39,13 +71,133 @@
                     `;
                     container.appendChild(newsBlock);
                 });
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Ошибка загрузки новостей:', error);
                 document.getElementById('news-container').innerHTML = '<p>Не удалось загрузить новости. Попробуйте позже.</p>';
+            }
+        }
+
+        // Сохраняем токен в localStorage
+        function saveToken(token) {
+            localStorage.setItem(GITHUB_TOKEN_KEY, token);
+            githubToken = token;
+        }
+
+        // Получаем токен из localStorage
+        function getStoredToken() {
+            return localStorage.getItem(GITHUB_TOKEN_KEY);
+        }
+
+        // Добавляем новость через GitHub API
+        async function addNews(title, content) {
+            if (!githubToken) {
+                document.getElementById('publishStatus').innerText = 'Ошибка: нет токена. Войдите заново.';
+                return false;
+            }
+
+            const today = new Date().toISOString().slice(0,10);
+            const newNews = {
+                date: today,
+                title: title,
+                content: content
+            };
+
+            // Получаем текущий файл
+            const fileResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${NEWS_FILE_PATH}`, {
+                headers: {
+                    'Authorization': `token ${githubToken}`
+                }
             });
+            
+            if (!fileResponse.ok) {
+                document.getElementById('publishStatus').innerText = 'Ошибка: не удалось загрузить файл новостей.';
+                return false;
+            }
+
+            const fileData = await fileResponse.json();
+            const currentContent = atob(fileData.content);
+            const newsData = JSON.parse(currentContent);
+            
+            // Добавляем новость в начало
+            newsData.news.unshift(newNews);
+            
+            const newContent = JSON.stringify(newsData, null, 4);
+            const newContentBase64 = btoa(unescape(encodeURIComponent(newContent)));
+
+            // Сохраняем файл
+            const updateResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${NEWS_FILE_PATH}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${githubToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `Добавлена новость: ${title}`,
+                    content: newContentBase64,
+                    sha: fileData.sha
+                })
+            });
+
+            if (updateResponse.ok) {
+                document.getElementById('publishStatus').innerText = 'Новость опубликована! Страница обновится через 5 секунд.';
+                setTimeout(() => {
+                    location.reload();
+                }, 5000);
+                return true;
+            } else {
+                document.getElementById('publishStatus').innerText = 'Ошибка при публикации. Попробуйте ещё раз.';
+                return false;
+            }
+        }
+
+        // Обработчики событий
+        document.getElementById('adminLoginBtn').onclick = () => {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('adminLoginBtn').style.display = 'none';
+        };
+
+        document.getElementById('loginSubmitBtn').onclick = () => {
+            const password = document.getElementById('adminPassword').value;
+            if (password === ADMIN_PASSWORD) {
+                const token = getStoredToken();
+                if (token) {
+                    githubToken = token;
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('newsForm').style.display = 'block';
+                    document.getElementById('publishStatus').innerHTML = '';
+                } else {
+                    const newToken = prompt('Введите ваш GitHub токен (Personal Access Token)');
+                    if (newToken) {
+                        saveToken(newToken);
+                        githubToken = newToken;
+                        document.getElementById('loginForm').style.display = 'none';
+                        document.getElementById('newsForm').style.display = 'block';
+                        document.getElementById('publishStatus').innerHTML = '';
+                    }
+                }
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        };
+
+        document.getElementById('publishBtn').onclick = () => {
+            const title = document.getElementById('newsTitle').value;
+            const content = document.getElementById('newsContent').value;
+            if (!title || !content) {
+                document.getElementById('publishStatus').innerText = 'Заполните заголовок и текст новости.';
+                return;
+            }
+            addNews(title, content);
+        };
+
+        // Загружаем токен при старте
+        const storedToken = getStoredToken();
+        if (storedToken) {
+            githubToken = storedToken;
+        }
+
+        // Загружаем новости
+        loadNews();
     </script>
-    
-    <script src="../script.js"></script>
 </body>
 </html>
