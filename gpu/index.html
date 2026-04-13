@@ -4,41 +4,30 @@
     <meta charset="UTF-8">
     <title>GPU Benchmark - TLC zekapro509</title>
     <style>
-        /* Базовые стили (светлая тема по умолчанию) */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            background: #ffffff;
-            font-family: 'Segoe UI Black', Arial, sans-serif;
+            margin: 0;
             min-height: 100vh;
+            background-color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: background 0.2s ease;
+            font-family: 'Segoe UI Black', Arial, sans-serif;
         }
-
         .container {
             text-align: center;
             padding: 20px;
         }
-
         h1 {
             font-size: 36px;
             margin-bottom: 40px;
             color: #000000;
         }
-
         .buttons {
             display: flex;
             flex-direction: column;
             gap: 20px;
             align-items: center;
         }
-
         .btn {
             background: #000000;
             color: #ffffff;
@@ -54,23 +43,20 @@
             text-decoration: none;
             display: inline-block;
         }
-
         .btn:hover {
             background: #ffffff;
             color: #000000;
             border: 2px solid #000000;
         }
-
         .note {
             margin-top: 40px;
             font-size: 14px;
             color: #555;
         }
-
-        /* Фиксированные кнопки в углах */
         .fixed-btn {
             position: fixed;
             top: 20px;
+            left: 20px;
             width: 48px;
             height: 48px;
             border-radius: 50%;
@@ -84,83 +70,17 @@
             justify-content: center;
             transition: all 0.2s ease;
             z-index: 1000;
+            text-decoration: none;
         }
-
         .fixed-btn:hover {
             background: #ffffff;
             color: #000000;
             border: 2px solid #000000;
         }
-
-        .back-btn {
-            left: 20px;
-            text-decoration: none;
-        }
-
-        .theme-toggle {
-            right: 20px;
-        }
-
-        /* Тёмная тема — применяется через класс на body */
-        body.dark {
-            background: #1a1a1a;
-        }
-
-        body.dark h1 {
-            color: #ffffff;
-        }
-
-        body.dark .btn {
-            background: #ffffff;
-            color: #000000;
-            border: 2px solid #000000;
-        }
-
-        body.dark .btn:hover {
-            background: #000000;
-            color: #ffffff;
-            border: 2px solid #ffffff;
-        }
-
-        body.dark .note {
-            color: #aaaaaa;
-        }
-
-        body.dark .fixed-btn {
-            background: #ffffff;
-            color: #000000;
-            border: 2px solid #000000;
-        }
-
-        body.dark .fixed-btn:hover {
-            background: #000000;
-            color: #ffffff;
-            border: 2px solid #ffffff;
-        }
     </style>
-
-    <script>
-        (function() {
-            // 1. Смотрим на сохранённые настройки
-            const saved = localStorage.getItem('theme');
-            if (saved === 'dark') {
-                document.body.classList.add('dark');
-            } else if (saved === 'light') {
-                document.body.classList.remove('dark');
-            } else {
-                // 2. Если нет сохранёнки — используем системную тему
-                const darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (darkMode) {
-                    document.body.classList.add('dark');
-                }
-            }
-        })();
-    </script>
 </head>
 <body>
-    <!-- Кнопки -->
-    <a href="../" class="fixed-btn back-btn">←</a>
-    <button class="fixed-btn theme-toggle" id="themeToggle">☀</button>
+    <a href="../" class="fixed-btn">←</a>
 
     <div class="container">
         <h1>GPU Benchmark</h1>
@@ -169,38 +89,7 @@
             <a href="medium/" class="btn">Medium (2500 сфер)</a>
             <a href="high/" class="btn">High (5000 сфер)</a>
         </div>
-        <div class="note">Выберите уровень нагрузки для теста видеокарты</div>
+        <div class="note">Выбери уровень нагрузки для теста видеокарты</div>
     </div>
-
-    <script>
-        const toggle = document.getElementById('themeToggle');
-        const body = document.body;
-
-        function updateThemeIcon() {
-            if (body.classList.contains('dark')) {
-                toggle.textContent = '☾';
-            } else {
-                toggle.textContent = '☀';
-            }
-        }
-
-        function setTheme(isDark) {
-            if (isDark) {
-                body.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            } else {
-                body.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            }
-            updateThemeIcon();
-        }
-
-        toggle.addEventListener('click', () => {
-            const willBeDark = !body.classList.contains('dark');
-            setTheme(willBeDark);
-        });
-
-        updateThemeIcon();
-    </script>
 </body>
 </html>
