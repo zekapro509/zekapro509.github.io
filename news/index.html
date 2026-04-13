@@ -16,7 +16,7 @@
 <body>
     <!-- Кнопки в правом верхнем углу -->
     <div class="top-buttons">
-        <button id="adminIconBtn" class="icon-btn" style="display:none;">🔒</button>
+        <button id="adminIconBtn" class="icon-btn">🔒</button>
         <button class="theme-toggle" id="theme-toggle">☀</button>
     </div>
 
@@ -52,9 +52,34 @@
         const REPO_NAME = "zekapro509.github.io";
         const NEWS_FILE_PATH = "news/news-data.json";
         const GITHUB_TOKEN_KEY = "github_token";
-        const ADMIN_PASSWORD = "olegloh256"; // Смени на свой пароль!
+        const ADMIN_PASSWORD = "Admin123"; // Смени на свой пароль!
 
         let githubToken = null;
+
+        // Функция для переключения темы (чтобы кнопка работала)
+        const toggleButton = document.getElementById('theme-toggle');
+        function setTheme(isDark) {
+            if (isDark) {
+                document.documentElement.classList.add('dark-theme');
+                toggleButton.textContent = '☾';
+            } else {
+                document.documentElement.classList.remove('dark-theme');
+                toggleButton.textContent = '☀';
+            }
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            setTheme(true);
+        } else {
+            setTheme(false);
+        }
+
+        toggleButton.onclick = function() {
+            const isDark = document.documentElement.classList.contains('dark-theme');
+            setTheme(!isDark);
+        };
 
         // Загружаем новости
         async function loadNews() {
@@ -155,12 +180,9 @@
         const storedToken = localStorage.getItem(GITHUB_TOKEN_KEY);
         if (storedToken) {
             githubToken = storedToken;
-            document.getElementById('adminIconBtn').style.display = 'flex';
-        } else {
-            document.getElementById('adminIconBtn').style.display = 'flex';
         }
 
-        // Обработчики событий
+        // Обработчики событий для админки
         document.getElementById('adminIconBtn').onclick = () => {
             if (githubToken) {
                 // Если уже вошли, показываем форму добавления
