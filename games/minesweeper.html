@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Сапёр - TLC zekapro509</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Google Sans', Arial, sans-serif;
+            font-weight: 500;
+        }
+        .game-container {
+            text-align: center;
+            padding: 20px;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(9, 35px);
+            gap: 2px;
+            background-color: #ccc;
+            padding: 10px;
+            margin: 20px auto;
+            width: fit-content;
+        }
+        .cell {
+            width: 35px;
+            height: 35px;
+            background-color: #ddd;
+            border: 1px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+        }
+        .cell.revealed {
+            background-color: #fff;
+        }
+        .cell.mine {
+            background-color: #ff6666;
+        }
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #000000;
+            color: #ffffff;
+            border: 2px solid #000000;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 1000;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            background: #ffffff;
+            color: #000000;
+            border: 2px solid #000000;
+        }
+        .status {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        button {
+            background: #000000;
+            color: #ffffff;
+            border: 2px solid #000000;
+            padding: 8px 24px;
+            font-size: 18px;
+            font-family: 'Google Sans', Arial, sans-serif;
+            font-weight: 500;
+            border-radius: 90px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+    <a href="./" class="back-btn">←</a>
+
+    <div class="game-container">
+        <h1>Сапёр</h1>
+        <div class="status">Осталось флагов: <span id="flagsLeft">0</span></div>
+        <div id="board" class="board"></div>
+        <button id="resetBtn">Новая игра</button>
+    </div>
+
+    <script>
+        const SIZE = 9;
+        const MINES = 10;
+        let board = [];
+        let gameOver = false;
+        let flags = [];
+
+        function initBoard() {
+            board = Array(SIZE).fill().map(() => Array(SIZE).fill({ revealed: false, mine: false, neighborMines: 0, flag: false }));
+            flags = Array(SIZE).fill().map(() => Array(SIZE).fill(false));
+            
+            let minesPlaced = 0;
+            while (minesPlaced < MINES) {
+                const row = Math.floor(Math.random() * SIZE);
+                const col = Math.floor(Math.random() * SIZE);
+                if (!board[row][col].mine) {
+                    board[row][col].mine = true;
+                    minesPlaced++;
+                }
+            }
+            
+            for (let row = 0; row < SIZE; row++) {
+                for (let col = 0; col < SIZE; col++) {
+                    if (board[row][col].mine) continue;
+                    let count = 0;
+                    for (let dr = -1; dr <= 1; dr++) {
+                        for (let dc = -1; dc <= 1; dc++) {
+                            const nr = row + dr, nc = col + dc;
+                            if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE && board[nr][nc].mine) count++;
+                        }
+                    }
+                    board[row][col].neighborMines = count;
+                }
+            }
+            
+            gameOver = false;
+            updateFlagsDisplay();
+            renderBoard();
+        }
+        
+        function updateFlagsDisplay() {
+            let flagCount = 0;
+            for (let row = 0; row < SIZE; row++) {
+                for (let col = 0; col < SIZE; col++) {
+                    if (flags[row][col]) flagCount++;
+                }
+            }
+            document.getElementById('flagsLeft').textContent = MINES - flagCount;
+        }
+        
+        function revealCell(row, col) {
+            if (gameOver) return;
+            if (flags[row][col]) return;
+            if (board[row][col].revealed) return;
+            
+            board[row][col].revealed = true;
+            
+            if (board[row][col].mine) {
+                gameOver = true;
+                renderBoard();
+                alert('Вы подорвались!');
+                return;
+            }
+            
+            if (board[row][col].neighborMines === 0) {
+                for (let dr = -1; dr <= 1; dr++) {
+                    for (let dc = -1; dc <= 1; dc++) {
+                        const nr = row + dr, nc = col + dc;
+                        if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE && !board[nr][nc].revealed && !board[nr][nc].mine && !flags[nr][nc]) {
+                            revealCell(nr, nc);
+                        }
+                    }
+                }
+            }
+            
+            renderBoard();
+            checkWin();
+        }
+        
+        function checkWin() {
+            let revealedCount = 0;
+            for (let row = 0; row < SIZE; row++) {
+                for (let col = 0; col < SIZE; col++) {
+                    if (board[row][col].revealed) revealedCount++;
+                }
+            }
+            if (revealedCount === SIZE * SIZE - MINES) {
+                gameOver = true;
+                alert('Победа!');
+                renderBoard();
+            }
+        }
+        
+        function renderBoard() {
+            const boardElement = document.getElementById('board');
+            boardElement.innerHTML = '';
+            
+            for (let row = 0; row < SIZE; row++) {
+                for (let col = 0; col < SIZE; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    
+                    if (board[row][col].revealed) {
+                        cell.classList.add('revealed');
+                        if (board[row][col].mine) {
+                            cell.classList.add('mine');
+                            cell.textContent = '💣';
+                        } else if (board[row][col].neighborMines > 0) {
+                            cell.textContent = board[row][col].neighborMines;
+                        }
+                    } else if (flags[row][col]) {
+                        cell.textContent = '🚩';
+                    }
+                    
+                    cell.onclick = (function(r, c) {
+                        return function() { revealCell(r, c); };
+                    })(row, col);
+                    
+                    cell.oncontextmenu = (function(r, c) {
+                        return function(e) {
+                            e.preventDefault();
+                            if (gameOver) return;
+                            if (board[r][c].revealed) return;
+                            flags[r][c] = !flags[r][c];
+                            updateFlagsDisplay();
+                            renderBoard();
+                        };
+                    })(row, col);
+                    
+                    boardElement.appendChild(cell);
+                }
+            }
+        }
+        
+        function resetGame() {
+            initBoard();
+        }
+        
+        document.getElementById('resetBtn').onclick = resetGame;
+        initBoard();
+    </script>
+</body>
+</html>
