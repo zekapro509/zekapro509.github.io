@@ -3,17 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <title>GPU Benchmark - TLC zekapro509</title>
+    <style>
+        /* Скрываем страницу до применения темы */
+        html {
+            visibility: hidden;
+        }
+        html.dark-theme,
+        html:not(.dark-theme) {
+            visibility: visible;
+        }
+    </style>
     <script>
-        // Супер-быстрое применение темы ДО любого рендеринга
+        // Применяем тему ДО того, как страница станет видимой
         (function() {
             const theme = localStorage.getItem('theme');
             if (theme === 'dark') {
+                document.documentElement.classList.add('dark-theme');
                 document.documentElement.style.backgroundColor = '#1a1a1a';
                 document.body.style.backgroundColor = '#1a1a1a';
             } else {
                 document.documentElement.style.backgroundColor = '#ffffff';
                 document.body.style.backgroundColor = '#ffffff';
             }
+            // Показываем страницу
+            document.documentElement.style.visibility = 'visible';
         })();
     </script>
     <style>
@@ -140,29 +153,7 @@
         }
     </style>
     <script>
-        (function() {
-            const theme = localStorage.getItem('theme');
-            if (theme === 'dark') {
-                document.body.classList.add('dark-theme');
-            }
-        })();
-    </script>
-</head>
-<body>
-    <a href="../" class="back-btn">←</a>
-    <button class="theme-toggle" id="theme-toggle">☀</button>
-
-    <div class="menu">
-        <h1>GPU Benchmark</h1>
-        <div class="buttons">
-            <a href="low/"><button class="bench-btn">Low (1000 сфер)</button></a>
-            <a href="medium/"><button class="bench-btn">Medium (2500 сфер)</button></a>
-            <a href="high/"><button class="bench-btn">High (5000 сфер)</button></a>
-        </div>
-        <div class="note">Выберите уровень нагрузки для теста видеокарты</div>
-    </div>
-
-    <script>
+        // Тёмная тема для переключения
         const toggleButton = document.getElementById('theme-toggle');
         function setTheme(isDark) {
             if (isDark) {
@@ -182,10 +173,26 @@
             setTheme(false);
         }
 
-        toggleButton.onclick = function() {
-            const isDark = document.body.classList.contains('dark-theme');
-            setTheme(!isDark);
-        };
+        if (toggleButton) {
+            toggleButton.onclick = function() {
+                const isDark = document.body.classList.contains('dark-theme');
+                setTheme(!isDark);
+            };
+        }
     </script>
+</head>
+<body>
+    <a href="../" class="back-btn">←</a>
+    <button class="theme-toggle" id="theme-toggle">☀</button>
+
+    <div class="menu">
+        <h1>GPU Benchmark</h1>
+        <div class="buttons">
+            <a href="low/"><button class="bench-btn">Low (1000 сфер)</button></a>
+            <a href="medium/"><button class="bench-btn">Medium (2500 сфер)</button></a>
+            <a href="high/"><button class="bench-btn">High (5000 сфер)</button></a>
+        </div>
+        <div class="note">Выбери уровень нагрузки для теста видеокарты</div>
+    </div>
 </body>
 </html>
