@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>GPU Benchmark - TLC zekapro509</title>
     <style>
+        /* Системная тема по умолчанию (без скриптов) */
         body {
             margin: 0;
             min-height: 100vh;
@@ -14,23 +15,37 @@
             font-family: 'Segoe UI Black', Arial, sans-serif;
             transition: 0.3s;
         }
+        /* Автоматическая тёмная тема, если система в тёмной теме */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1a1a1a;
+            }
+            h1 {
+                color: #ffffff;
+            }
+            .note {
+                color: #aaa;
+            }
+        }
+        /* Класс для ручного переключения (перебивает системную) */
         body.dark-theme {
             background-color: #1a1a1a;
+        }
+        body.dark-theme h1 {
+            color: #ffffff;
+        }
+        body.dark-theme .note {
+            color: #aaa;
         }
         .menu {
             text-align: center;
             background: transparent;
             padding: 40px;
-            border-radius: 0;
-            backdrop-filter: none;
         }
         h1 {
             color: #000000;
             margin-bottom: 40px;
             font-size: 32px;
-        }
-        body.dark-theme h1 {
-            color: #ffffff;
         }
         .buttons {
             display: flex;
@@ -57,6 +72,19 @@
             color: #000000;
             border: 2px solid #000000;
         }
+        /* Тёмная тема для кнопок */
+        @media (prefers-color-scheme: dark) {
+            .bench-btn {
+                background-color: #ffffff;
+                color: #000000;
+                border: 2px solid #000000;
+            }
+            .bench-btn:hover {
+                background-color: #000000;
+                color: #ffffff;
+                border: 2px solid #ffffff;
+            }
+        }
         body.dark-theme .bench-btn {
             background-color: #ffffff;
             color: #000000;
@@ -71,9 +99,6 @@
             color: #333;
             margin-top: 40px;
             font-size: 14px;
-        }
-        body.dark-theme .note {
-            color: #aaa;
         }
         a {
             text-decoration: none;
@@ -102,6 +127,18 @@
             background-color: #ffffff;
             color: #000000;
             border: 2px solid #000000;
+        }
+        @media (prefers-color-scheme: dark) {
+            .theme-toggle {
+                background-color: #ffffff;
+                color: #000000;
+                border: 2px solid #000000;
+            }
+            .theme-toggle:hover {
+                background-color: #000000;
+                color: #ffffff;
+                border: 2px solid #ffffff;
+            }
         }
         body.dark-theme .theme-toggle {
             background-color: #ffffff;
@@ -139,6 +176,18 @@
             color: #000000;
             border: 2px solid #000000;
         }
+        @media (prefers-color-scheme: dark) {
+            .back-btn {
+                background-color: #ffffff;
+                color: #000000;
+                border: 2px solid #000000;
+            }
+            .back-btn:hover {
+                background-color: #000000;
+                color: #ffffff;
+                border: 2px solid #ffffff;
+            }
+        }
         body.dark-theme .back-btn {
             background-color: #ffffff;
             color: #000000;
@@ -151,13 +200,14 @@
         }
     </style>
     <script>
-        // Применяем тему ДО отрисовки
-        (function() {
-            const theme = localStorage.getItem('theme');
-            if (theme === 'dark') {
-                document.body.classList.add('dark-theme');
-            }
-        })();
+        // Проверяем, была ли тема выбрана вручную ранее
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-theme');
+        } else if (savedTheme === 'light') {
+            document.body.classList.remove('dark-theme');
+        }
+        // Если сохранённой темы нет, оставляем системную (через CSS)
     </script>
 </head>
 <body>
@@ -176,28 +226,48 @@
 
     <script>
         const toggleButton = document.getElementById('theme-toggle');
+        
+        function updateButtonAppearance() {
+            const isDark = document.body.classList.contains('dark-theme') || 
+                          (window.matchMedia('(prefers-color-scheme: dark)').matches && !localStorage.getItem('theme'));
+            if (isDark) {
+                toggleButton.textContent = '☾';
+            } else {
+                toggleButton.textContent = '☀';
+            }
+        }
+        
         function setTheme(isDark) {
             if (isDark) {
                 document.body.classList.add('dark-theme');
-                toggleButton.textContent = '☾';
+                localStorage.setItem('theme', 'dark');
             } else {
                 document.body.classList.remove('dark-theme');
-                toggleButton.textContent = '☀';
+                localStorage.setItem('theme', 'light');
             }
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateButtonAppearance();
         }
 
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            setTheme(true);
-        } else {
-            setTheme(false);
-        }
-
+        // Начальная установка кнопки
+        updateButtonAppearance();
+        
         toggleButton.onclick = function() {
-            const isDark = document.body.classList.contains('dark-theme');
+            const isDark = document.body.classList.contains('dark-theme') || 
+                          (window.matchMedia('(prefers-color-scheme: dark)').matches && !localStorage.getItem('theme'));
             setTheme(!isDark);
         };
+        
+        // Следим за изменением системной темы (если пользователь не выбрал вручную)
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                if (e.matches) {
+                    document.body.classList.add('dark-theme');
+                } else {
+                    document.body.classList.remove('dark-theme');
+                }
+                updateButtonAppearance();
+            }
+        });
     </script>
 </body>
 </html>
