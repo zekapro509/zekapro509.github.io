@@ -1,6 +1,7 @@
 body {
     text-align: center;
-    font-family: Arial, sans-serif;
+    font-family: 'Google Sans', Arial, sans-serif;
+    font-weight: 500;
     margin: 0;
     padding: 0;
     background-color: #ffffff;
@@ -18,7 +19,8 @@ body {
 
 h1 {
     color: black;
-    font-family: Arial, sans-serif;
+    font-family: 'Google Sans', Arial, sans-serif;
+    font-weight: 700;
 }
 
 .buttons {
@@ -35,7 +37,8 @@ h1 {
     border: 2px solid #000000;
     padding: 16px 32px;
     font-size: 24px;
-    font-family: Arial, sans-serif;
+    font-family: 'Google Sans', Arial, sans-serif;
+    font-weight: 500;
     border-radius: 90px;
     cursor: pointer;
     transition: 0.3s;
@@ -60,12 +63,14 @@ h1 {
 .news-item h3 {
     color: #000;
     margin-top: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Google Sans', Arial, sans-serif;
+    font-weight: 700;
 }
 
 .news-item p {
     color: #1e1e1e;
-    font-family: Arial, sans-serif;
+    font-family: 'Google Sans', Arial, sans-serif;
+    font-weight: 500;
 }
 
 .winpe-info {
@@ -89,12 +94,14 @@ h1 {
 .winpe-version h3, .winpe-features h3 {
     color: #000;
     margin-top: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Google Sans', Arial, sans-serif;
+    font-weight: 700;
 }
 
 .winpe-version p, .winpe-features li {
-    color: #555;
-    font-family: Arial, sans-serif;
+    color: #333;
+    font-family: 'Google Sans', Arial, sans-serif;
+    font-weight: 500;
 }
 
 .winpe-features ul {
@@ -108,7 +115,8 @@ h1 {
 
 .note {
     font-size: 12px;
-    color: #555;
+    color: #999;
     margin-top: 10px;
-    font-family: Arial, sans-serif;
+    font-family: 'Google Sans', Arial, sans-serif;
+    font-weight: 500;
 }
