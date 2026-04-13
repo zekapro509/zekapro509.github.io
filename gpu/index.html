@@ -14,7 +14,6 @@
             font-family: 'Segoe UI Black', Arial, sans-serif;
             transition: 0.3s;
         }
-        /* Тёмная тема для тела */
         body.dark-theme {
             background-color: #1a1a1a;
         }
@@ -63,7 +62,6 @@
         a {
             text-decoration: none;
         }
-        /* Кнопка переключения темы (справа) */
         .theme-toggle {
             position: fixed;
             top: 20px;
@@ -89,7 +87,6 @@
             color: #000000;
             border: 2px solid #000000;
         }
-        /* Кнопка назад (слева) */
         .back-btn {
             position: fixed;
             top: 20px;
@@ -116,7 +113,6 @@
             color: #000000;
             border: 2px solid #000000;
         }
-        /* Тёмная тема для кнопок */
         body.dark-theme .theme-toggle,
         body.dark-theme .back-btn {
             background-color: #ffffff;
@@ -130,6 +126,15 @@
             border: 2px solid #ffffff;
         }
     </style>
+    <script>
+        // Применяем тему ДО отрисовки страницы
+        (function() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
+            }
+        })();
+    </script>
 </head>
 <body>
     <a href="../" class="back-btn">←</a>
@@ -142,11 +147,11 @@
             <a href="medium/"><button class="bench-btn">Medium (2500 сфер)</button></a>
             <a href="high/"><button class="bench-btn">High (5000 сфер)</button></a>
         </div>
-        <div class="note">Выберите уровень нагрузки для теста видеокарты</div>
+        <div class="note">Выбери уровень нагрузки для теста видеокарты</div>
     </div>
 
     <script>
-        // Тёмная тема
+        // Тёмная тема для интерактива
         const toggleButton = document.getElementById('theme-toggle');
         function setTheme(isDark) {
             if (isDark) {
