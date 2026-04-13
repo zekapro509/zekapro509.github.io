@@ -7,15 +7,20 @@
         body {
             margin: 0;
             min-height: 100vh;
-            background-color: #333;
+            background-color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: 'Segoe UI Black', Arial, sans-serif;
+            transition: 0.3s;
+        }
+        /* Тёмная тема для тела */
+        body.dark-theme {
+            background-color: #1a1a1a;
         }
         .menu {
             text-align: center;
-            background: rgb(0, 0, 0);
+            background: rgba(0,0,0,0.7);
             padding: 40px;
             border-radius: 20px;
             backdrop-filter: blur(5px);
@@ -58,9 +63,48 @@
         a {
             text-decoration: none;
         }
+        /* Кнопка переключения темы */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #000000;
+            color: #ffffff;
+            border: 2px solid #000000;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 26px;
+            cursor: pointer;
+            transition: 0.3s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            line-height: 1;
+        }
+        .theme-toggle:hover {
+            background-color: #ffffff;
+            color: #000000;
+            border: 2px solid #000000;
+        }
+        /* Тёмная тема для кнопки */
+        body.dark-theme .theme-toggle {
+            background-color: #ffffff;
+            color: #000000;
+            border: 2px solid #000000;
+        }
+        body.dark-theme .theme-toggle:hover {
+            background-color: #000000;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+        }
     </style>
 </head>
 <body>
+    <button class="theme-toggle" id="theme-toggle">☀</button>
+
     <div class="menu">
         <h1>GPU Benchmark</h1>
         <div class="buttons">
@@ -68,7 +112,34 @@
             <a href="medium/"><button class="bench-btn">Medium (2500 сфер)</button></a>
             <a href="high/"><button class="bench-btn">High (5000 сфер)</button></a>
         </div>
-        <div class="note">Выберите уровень нагрузки для теста видеокарты</div>
+        <div class="note">Выбери уровень нагрузки для теста видеокарты</div>
     </div>
+
+    <script>
+        // Тёмная тема
+        const toggleButton = document.getElementById('theme-toggle');
+        function setTheme(isDark) {
+            if (isDark) {
+                document.body.classList.add('dark-theme');
+                toggleButton.textContent = '☾';
+            } else {
+                document.body.classList.remove('dark-theme');
+                toggleButton.textContent = '☀';
+            }
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            setTheme(true);
+        } else {
+            setTheme(false);
+        }
+
+        toggleButton.onclick = function() {
+            const isDark = document.body.classList.contains('dark-theme');
+            setTheme(!isDark);
+        };
+    </script>
 </body>
 </html>
