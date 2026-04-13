@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Новости - TLC zekapro509</title>
+    <link rel="stylesheet" href="../style.css">
+    <script>
+        // Применяем тему ДО отрисовки страницы
+        (function() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark-theme');
+            }
+        })();
+    </script>
+</head>
+<body>
+    <button class="theme-toggle" id="theme-toggle">☀</button>
+
+    <h1>Новости</h1>
+
+    <div id="news-container"></div>
+
+    <a href="../">
+        <button class="news-btn">На главную</button>
+    </a>
+
+    <script>
+        fetch('news-data.json')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('news-container');
+                data.news.forEach(news => {
+                    const newsBlock = document.createElement('div');
+                    newsBlock.className = 'news-item';
+                    newsBlock.innerHTML = `
+                        <h3>${news.date} — ${news.title}</h3>
+                        <p>${news.content}</p>
+                    `;
+                    container.appendChild(newsBlock);
+                });
+            })
+            .catch(error => {
+                console.error('Ошибка загрузки новостей:', error);
+                document.getElementById('news-container').innerHTML = '<p>Не удалось загрузить новости. Попробуйте позже.</p>';
+            });
+    </script>
+    
+    <script src="../script.js"></script>
+</body>
+</html>

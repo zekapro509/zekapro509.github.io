@@ -1,0 +1,221 @@
+/* Основные стили body */
+body {
+    text-align: center;
+    font-family: "Segoe UI Black", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    color: #000000;
+    transition: 0.3s;
+}
+
+.white-text {
+    color: white;
+    text-shadow: 
+        1px 1px 0 black,
+        -1px -1px 0 black,
+        1px -1px 0 black,
+        -1px 1px 0 black;
+}
+
+h1 {
+    color: white;
+    -webkit-text-stroke: 2px black;
+}
+
+/* Контейнер для кнопок — вертикальное расположение */
+.buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+/* Стиль для обычных кнопок */
+.news-btn {
+    background-color: #000000;
+    color: #ffffff;
+    border: 2px solid #000000;
+    padding: 16px 32px;
+    font-size: 24px;
+    font-family: 'Segoe UI Black', Arial, sans-serif;
+    border-radius: 90px;
+    cursor: pointer;
+    transition: 0.3s;
+    width: 200px;
+}
+
+.news-btn:hover {
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+}
+
+/* Стили для постов новостей (светлая тема) */
+.news-item {
+    text-align: left;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 15px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+}
+
+.news-item h3 {
+    color: #000;
+    margin-top: 0;
+}
+
+.news-item p {
+    color: #1e1e1e;
+}
+
+/* Кнопка-пиктограмма */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #000000;
+    color: #ffffff;
+    border: 2px solid #000000;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 26px;
+    cursor: pointer;
+    transition: 0.3s;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+}
+
+.theme-toggle:hover {
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+}
+
+/* Убираем точки списка на странице WinPe */
+.winpe-features ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+/* Стили для страницы WinPe */
+.winpe-info {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin: 30px auto;
+    max-width: 800px;
+    flex-wrap: wrap;
+}
+
+.winpe-version, .winpe-features {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 20px;
+    text-align: left;
+    flex: 1;
+    min-width: 200px;
+}
+
+.winpe-version h3, .winpe-features h3 {
+    color: #000;
+    margin-top: 0;
+}
+
+.winpe-version p, .winpe-features li {
+    color: #333;
+}
+
+.winpe-features ul {
+    padding-left: 20px;
+}
+
+.download-section {
+    margin: 30px 0;
+}
+
+.note {
+    font-size: 12px;
+    color: #999;
+    margin-top: 10px;
+}
+
+/* Тёмная тема */
+html.dark-theme body {
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+}
+
+html.dark-theme .news-btn {
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+}
+
+html.dark-theme .news-btn:hover {
+    background-color: #000000;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+}
+
+html.dark-theme .news-item {
+    background-color: #2c2c2c;
+}
+
+html.dark-theme .news-item h3 {
+    color: #f0f0f0;
+}
+
+html.dark-theme .news-item p {
+    color: #dddddd;
+}
+
+html.dark-theme .theme-toggle {
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+}
+
+html.dark-theme .theme-toggle:hover {
+    background-color: #000000;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+}
+
+html.dark-theme button:not(.theme-toggle) {
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+}
+
+html.dark-theme button:not(.theme-toggle):hover {
+    background-color: #000000;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+}
+
+html.dark-theme .winpe-version,
+html.dark-theme .winpe-features {
+    background-color: #2c2c2c;
+}
+
+html.dark-theme .winpe-version h3,
+html.dark-theme .winpe-features h3 {
+    color: #f0f0f0;
+}
+
+html.dark-theme .winpe-version p,
+html.dark-theme .winpe-features li {
+    color: #dddddd;
+}
+
+html.dark-theme .note {
+    color: #777;
+}

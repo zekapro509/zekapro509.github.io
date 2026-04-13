@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>WinPe - TLC zekapro509</title>
+    <link rel="stylesheet" href="../style.css">
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark-theme');
+            }
+        })();
+    </script>
+</head>
+<body>
+    <button class="theme-toggle" id="theme-toggle">☀</button>
+
+    <h1>WinPe от TLC zekapro509</h1>
+    <p>Моя авторская сборка Windows PE для диагностики и восстановления системы.</p>
+
+    <div class="winpe-info">
+        <div class="winpe-version">
+            <h3>Версия: 1.0</h3>
+            <p>Дата выпуска: 13.04.2026</p>
+            <p>Размер: 321 МБ</p>
+        </div>
+        <div class="winpe-features">
+            <h3>Что внутри:</h3>
+            <ul>
+                <li>Victoria HDD</li>
+                <li>CPU-Z</li>
+                <li>Rufus</li>
+                <li>Crystal Disk Info</li>
+                <li>7-zip</li>
+                <li>Notepad++</li>
+                <li>NTPWedit</li>
+                <li>Recuva</li>
+                <li>AOMEI Partition Assistant</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="download-section">
+        <a href="winpe.iso" class="download-link" download>
+            <button class="news-btn">Скачать WinPe</button>
+        </a>
+        <p class="note">*Не поддерживается Microsoft</p>
+    </div>
+
+    <a href="../">
+        <button class="news-btn">На главную</button>
+    </a>
+
+    <script src="../script.js"></script>
+</body>
+</html>

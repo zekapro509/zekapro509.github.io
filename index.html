@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>TLC zekapro509</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark-theme');
+            }
+        })();
+    </script>
+</head>
+<body>
+    <button class="theme-toggle" id="theme-toggle">☀</button>
+
+    <h1>TLC zekapro509</h1>
+    <p>Информационный сайт ютубера TLC zekapro509</p>
+    
+    <div class="buttons">
+        <a href="news/">
+            <button class="news-btn">Новости</button>
+        </a>
+        <a href="winpe/">
+            <button class="news-btn">WinPe</button>
+        </a>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
