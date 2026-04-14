@@ -338,59 +338,41 @@ p {
     }
 }
 
-/* ===== ФИНАЛЬНЫЙ ФИКС ДЛЯ ТЕЛЕФОНОВ (чтобы кнопка НАЗАД не закрывала текст) ===== */
-@media (max-width: 600px) {
-    /* Заголовок - добавляем отступ слева, чтобы уехать из-под кнопки */
-    h1 {
-        font-size: 24px !important;
-        word-break: break-word;
-        padding-left: 60px !important;  /* <--- ВОТ ЭТО ГЛАВНОЕ! Отодвигаем текст от левого края */
-        padding-right: 15px;
-        margin-top: 25px !important;
-        margin-bottom: 15px;
-        text-align: center; /* Оставляем центр, но с учетом отступа */
-    }
-
-    /* Подзаголовок */
-    p {
-        font-size: 14px;
-        padding-left: 15px;
-        padding-right: 15px;
-        word-break: break-word;
-    }
-
-    /* Блоки с инфой (Версия: 1.0 и Что внутри) */
-    .winpe-version,
-    .winpe-features {
-        padding: 15px !important;
-        min-width: auto !important;
-        width: 90%;
-        margin: 0 auto;
-    }
-
-    .winpe-version h3,
-    .winpe-features h3 {
-        font-size: 18px !important;
-    }
-
-    .winpe-features li {
-        font-size: 14px;
-        padding: 3px 0;
-    }
-
-    /* Кнопка Скачать */
-    .btn {
-        font-size: 18px !important;
-        width: 220px !important;
-        padding: 14px 20px !important;
+/* ===== АДАПТАЦИЯ КНОПКИ НАЗАД (ПК = fixed, Телефон = static) ===== */
+@media (max-width: 768px) {
+    /* Убиваем fixed позиционирование */
+    .back-btn {
+        position: static !important; /* Кнопка встаёт в общий поток */
+        display: inline-flex !important; /* Чтобы была по центру, если надо */
+        margin: 15px auto 5px auto !important; /* Отступы сверху и снизу */
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #000000;
+        color: #ffffff;
+        /* Убираем координаты top/left */
+        top: auto;
+        left: auto;
+        box-shadow: none;
     }
     
-    /* Саму кнопку НАЗАД можно чуть уменьшить на телефоне */
-    .back-btn {
-        width: 45px;
-        height: 45px;
-        font-size: 22px;
-        top: 15px;
-        left: 10px;
+    /* Даём заголовку нормально дышать, убираем принудительные отступы */
+    h1 {
+        padding-left: 15px !important;
+        padding-right: 15px;
+        margin-top: 5px !important;
+        font-size: 26px !important;
+    }
+
+    /* Обёртка для всего (если нет контейнера, центрируем через body) */
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* На всякий случай убираем лишние фиксы, если они были */
+    .winpe-info {
+        margin-top: 10px;
     }
 }
