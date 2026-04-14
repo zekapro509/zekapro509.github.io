@@ -17,11 +17,11 @@
             left: 20px;
             color: white;
             background: rgba(0,0,0,0.6);
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 30px;
             z-index: 100;
             pointer-events: none;
-            font-size: 14px;
+            font-size: 16px;
             backdrop-filter: blur(4px);
             border: 1px solid rgba(255,255,255,0.15);
         }
@@ -31,29 +31,15 @@
             right: 20px;
             color: white;
             background: rgba(0,0,0,0.6);
-            padding: 8px 18px;
+            padding: 10px 22px;
             border-radius: 30px;
             z-index: 100;
             font-family: monospace;
-            font-size: 20px;
+            font-size: 24px;
             font-weight: bold;
             pointer-events: none;
             backdrop-filter: blur(4px);
             border: 1px solid rgba(255,255,255,0.15);
-        }
-        .warning {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            color: #ffaa66;
-            background: rgba(0,0,0,0.5);
-            padding: 6px 16px;
-            border-radius: 30px;
-            z-index: 100;
-            font-size: 12px;
-            pointer-events: none;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,170,102,0.3);
         }
         .back-link {
             position: absolute;
@@ -61,7 +47,7 @@
             right: 20px;
             color: white;
             background: rgba(0,0,0,0.6);
-            padding: 8px 18px;
+            padding: 10px 20px;
             border-radius: 30px;
             z-index: 100;
             text-decoration: none;
@@ -75,14 +61,7 @@
             background: white;
             color: black;
         }
-        @media (max-width: 768px) {
-            #info { font-size: 12px; padding: 6px 12px; }
-            #fps { font-size: 16px; padding: 6px 14px; }
-            .warning { display: none; }
-            .back-link { font-size: 12px; padding: 6px 14px; }
-        }
     </style>
-    
     <script type="importmap">
         {
             "imports": {
@@ -93,16 +72,13 @@
     </script>
 </head>
 <body>
-    <div id="info"><strong>GPU Benchmark ULTRA</strong> | 10000 сфер</div>
+    <div id="info">GPU Benchmark ULTRA | 10000 сфер</div>
     <div id="fps">FPS: --</div>
     <a href="../" class="back-link">← Назад</a>
 
     <script type="module">
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
-                         || window.innerWidth < 768;
 
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x050510);
@@ -112,74 +88,49 @@
         camera.position.set(5, 4, 8);
         camera.lookAt(0, 0, 0);
 
-        const renderer = new THREE.WebGLRenderer({ 
-            antialias: !isMobile,
-            powerPreference: "high-performance" 
-        });
+        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        
-        // На ПК включаем тени, на мобилках — нет
-        renderer.shadowMap.enabled = !isMobile;
-        if (!isMobile) {
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        }
-        
-        const pixelRatio = isMobile ? Math.min(window.devicePixelRatio, 1.2) : window.devicePixelRatio;
-        renderer.setPixelRatio(pixelRatio);
-        
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.0));
         document.body.appendChild(renderer.domElement);
 
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
-        controls.dampingFactor = isMobile ? 0.02 : 0.04;
+        controls.dampingFactor = 0.04;
         controls.enableZoom = true;
-        controls.zoomSpeed = isMobile ? 0.6 : 1.0;
-        controls.rotateSpeed = isMobile ? 0.4 : 0.8;
-        controls.enablePan = !isMobile;
+        controls.zoomSpeed = 1.0;
+        controls.rotateSpeed = 0.8;
         controls.target.set(0, 0, 0);
 
-        // Освещение
         const ambientLight = new THREE.AmbientLight(0x404060);
         scene.add(ambientLight);
         
-        const mainLight = new THREE.DirectionalLight(0xffffff, isMobile ? 0.8 : 1.2);
+        const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
         mainLight.position.set(5, 10, 3);
-        if (!isMobile) {
-            mainLight.castShadow = true;
-            mainLight.shadow.mapSize.width = 2048;
-            mainLight.shadow.mapSize.height = 2048;
-        }
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.width = 2048;
+        mainLight.shadow.mapSize.height = 2048;
         scene.add(mainLight);
         
-        const backLight = new THREE.PointLight(0x4466cc, isMobile ? 0.3 : 0.6);
+        const backLight = new THREE.PointLight(0x4466cc, 0.6);
         backLight.position.set(-2, 2, -3);
         scene.add(backLight);
         
-        const fillLight = new THREE.PointLight(0xffaa66, isMobile ? 0.2 : 0.5);
+        const fillLight = new THREE.PointLight(0xffaa66, 0.5);
         fillLight.position.set(3, 1, 2);
         scene.add(fillLight);
         
-        let movingLight;
-        if (!isMobile) {
-            movingLight = new THREE.PointLight(0xff66aa, 0.8);
-            movingLight.castShadow = true;
-            movingLight.shadow.mapSize.width = 1024;
-            movingLight.shadow.mapSize.height = 1024;
-            scene.add(movingLight);
-        }
+        const movingLight = new THREE.PointLight(0xff66aa, 0.8);
+        movingLight.castShadow = true;
+        movingLight.shadow.mapSize.width = 1024;
+        movingLight.shadow.mapSize.height = 1024;
+        scene.add(movingLight);
 
-        // 10000 сфер
         const count = 10000;
-        const sphereDetail = isMobile ? 8 : 20;
-        const geometry = new THREE.SphereGeometry(0.05, sphereDetail, sphereDetail);
-        const material = new THREE.MeshStandardMaterial({ 
-            roughness: 0.25, 
-            metalness: 0.8,
-            emissive: new THREE.Color(0x111122),
-            emissiveIntensity: 0.15
-        });
+        const geometry = new THREE.SphereGeometry(0.05, 14, 14);
+        const material = new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 0.8 });
         const instancedMesh = new THREE.InstancedMesh(geometry, material, count);
-        
         const dummy = new THREE.Object3D();
         const radius = 4.0;
         
@@ -187,11 +138,9 @@
             const u = Math.random();
             const v = Math.random();
             const w = Math.random();
-            
             const theta = 2 * Math.PI * u;
             const phi = Math.acos(2 * v - 1);
             const r = radius * Math.cbrt(w);
-            
             const x = r * Math.sin(phi) * Math.cos(theta);
             const y = r * Math.sin(phi) * Math.sin(theta);
             const z = r * Math.cos(phi);
@@ -201,18 +150,16 @@
             dummy.updateMatrix();
             instancedMesh.setMatrixAt(i, dummy.matrix);
             
-            // Градиент: внутренние — бело-голубые, внешние — красно-оранжевые
             const hue = 0.55 + (r / radius) * 0.5;
             instancedMesh.setColorAt(i, new THREE.Color().setHSL(hue % 1.0, 1.0, 0.5));
         }
         
         instancedMesh.instanceMatrix.needsUpdate = true;
         instancedMesh.instanceColor.needsUpdate = true;
-        instancedMesh.castShadow = !isMobile;
-        instancedMesh.receiveShadow = !isMobile;
+        instancedMesh.castShadow = true;
+        instancedMesh.receiveShadow = true;
         scene.add(instancedMesh);
 
-        // Звёзды
         const starsGeometry = new THREE.BufferGeometry();
         const starsCount = 2000;
         const starPositions = new Float32Array(starsCount * 3);
@@ -247,17 +194,14 @@
         
         function animate() {
             requestAnimationFrame(animate);
-            time += isMobile ? 0.002 : 0.008;
+            time += 0.008;
             
-            if (!isMobile && movingLight) {
-                movingLight.position.x = Math.sin(time) * 6;
-                movingLight.position.z = Math.cos(time * 0.6) * 6;
-                movingLight.position.y = 2.0 + Math.sin(time * 1.1) * 1.5;
-            }
+            movingLight.position.x = Math.sin(time) * 6;
+            movingLight.position.z = Math.cos(time * 0.6) * 6;
+            movingLight.position.y = 2.0 + Math.sin(time * 1.1) * 1.5;
             
             instancedMesh.rotation.y = time * 0.04;
             instancedMesh.rotation.x = Math.sin(time * 0.1) * 0.1;
-            
             stars.rotation.y += 0.00005;
             
             controls.update();
@@ -271,11 +215,7 @@
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-            
-            const newIsMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
-                                || window.innerWidth < 768;
-            const newPixelRatio = newIsMobile ? Math.min(window.devicePixelRatio, 1.2) : window.devicePixelRatio;
-            renderer.setPixelRatio(newPixelRatio);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.0));
         });
     </script>
 </body>
