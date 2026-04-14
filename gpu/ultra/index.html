@@ -91,7 +91,7 @@
         scene.fog = new THREE.FogExp2(0x050510, 0.0015);
 
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(5, 4, 8);
+        camera.position.set(8, 6, 12);
         camera.lookAt(0, 0, 0);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
@@ -138,7 +138,7 @@
         const material = new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 0.8 });
         const instancedMesh = new THREE.InstancedMesh(geometry, material, count);
         const dummy = new THREE.Object3D();
-        const radius = 4.0;
+        const radius = 4.5;
         
         for (let i = 0; i < count; i++) {
             const u = Math.random();
