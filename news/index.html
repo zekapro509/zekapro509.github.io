@@ -13,10 +13,9 @@
     <h1>Новости</h1>
 
     <div id="news-container">
-        <p class="loading">Загрузка новостей...</p>
+        <p class="loading">Загрузка...</p>
     </div>
 
-    <script src="../js/browser-check.js"></script>
     <script>
         function loadNews() {
             var container = document.getElementById('news-container');
@@ -28,21 +27,32 @@
                 })
                 .then(function(data) {
                     if (data.news && data.news.length > 0) {
+                        // Сортировка по дате (новые сверху)
+                        data.news.sort(function(a, b) {
+                            return new Date(b.date) - new Date(a.date);
+                        });
+                        
                         container.innerHTML = '';
+                        
                         data.news.forEach(function(item) {
                             var article = document.createElement('article');
                             article.className = 'news-item';
-                            article.innerHTML = '<h3>' + item.date + ' — ' + item.title + '</h3>' +
+                            
+                            // Форматирование даты из 2026-04-13 в 13.04.2026
+                            var parts = item.date.split('-');
+                            var formattedDate = parts[2] + '.' + parts[1] + '.' + parts[0];
+                            
+                            article.innerHTML = '<h3>' + formattedDate + ' — ' + item.title + '</h3>' +
                                              '<p>' + item.content + '</p>';
                             container.appendChild(article);
                         });
                     } else {
-                        container.innerHTML = '<p>😴 Новостей пока нет.</p>';
+                        container.innerHTML = '<p>Новостей пока нет.</p>';
                     }
                 })
                 .catch(function(error) {
-                    console.error('Ошибка:', error);
-                    container.innerHTML = '<p>❌ Не удалось загрузить новости. Попробуйте позже.</p>';
+                    console.error('Ошибка загрузки новостей:', error);
+                    container.innerHTML = '<p>Не удалось загрузить новости.</p>';
                 });
         }
         
