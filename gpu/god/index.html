@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>GPU Benchmark GOD — TLC zekapro509</title>
+    <script>
+        var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        if (isMobile) {
+            window.location.href = '../';
+        }
+    </script>
     <style>
         body {
             margin: 0;
@@ -66,7 +72,6 @@
             border-color: #ffaa00;
         }
     </style>
-    
     <script type="importmap">
         {
             "imports": {
@@ -114,7 +119,6 @@
         controls.target.set(0, 0, 0);
         controls.maxPolarAngle = Math.PI / 1.8;
 
-        // Освещение
         const ambientLight = new THREE.AmbientLight(0x404060, 0.8);
         scene.add(ambientLight);
         
@@ -146,7 +150,6 @@
         movingLight2.shadow.mapSize.height = 1024;
         scene.add(movingLight2);
 
-        // 50000 сфер
         const count = 50000;
         const geometry = new THREE.SphereGeometry(0.035, 14, 14);
         const material = new THREE.MeshStandardMaterial({ 
@@ -190,7 +193,6 @@
         instancedMesh.receiveShadow = true;
         scene.add(instancedMesh);
 
-        // Звёзды
         const starsGeometry = new THREE.BufferGeometry();
         const starsCount = 4000;
         const starPositions = new Float32Array(starsCount * 3);
@@ -237,7 +239,6 @@
             
             instancedMesh.rotation.y = time * 0.025;
             instancedMesh.rotation.x = Math.sin(time * 0.06) * 0.06;
-            
             stars.rotation.y += 0.00002;
             
             controls.update();
