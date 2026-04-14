@@ -78,7 +78,7 @@
     </script>
 </head>
 <body>
-    <div id="info">GPU Benchmark EXTREME | 20000 сфер</div>
+    <div id="info">GPU Benchmark EXTREME | 25000 сфер</div>
     <div id="fps">FPS: --</div>
     <a href="../" class="back-link">← Назад</a>
 
@@ -133,12 +133,12 @@
         movingLight.shadow.mapSize.height = 1024;
         scene.add(movingLight);
 
-        const count = 20000;
+        const count = 25000;
         const geometry = new THREE.SphereGeometry(0.04, 12, 12);
         const material = new THREE.MeshStandardMaterial({ roughness: 0.2, metalness: 0.9 });
         const instancedMesh = new THREE.InstancedMesh(geometry, material, count);
         const dummy = new THREE.Object3D();
-        const radius = 4.5;
+        const radius = 4.8;
         
         for (let i = 0; i < count; i++) {
             const u = Math.random();
