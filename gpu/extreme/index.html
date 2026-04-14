@@ -6,224 +6,52 @@
     <title>GPU Benchmark Extreme — TLC zekapro509</title>
     <script>
         var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        if (isMobile) {
-            window.location.href = '../';
-        }
+        if (isMobile) window.location.href = '../';
     </script>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            font-family: 'Segoe UI', 'Google Sans', Arial, sans-serif;
-            background-color: #050510;
-        }
-        #info {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: white;
-            background: rgba(0,0,0,0.6);
-            padding: 10px 20px;
-            border-radius: 30px;
-            z-index: 100;
-            pointer-events: none;
-            font-size: 16px;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.15);
-        }
-        #fps {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: white;
-            background: rgba(0,0,0,0.6);
-            padding: 10px 22px;
-            border-radius: 30px;
-            z-index: 100;
-            font-family: monospace;
-            font-size: 24px;
-            font-weight: bold;
-            pointer-events: none;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.15);
-        }
-        .back-link {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            color: white;
-            background: rgba(0,0,0,0.6);
-            padding: 10px 20px;
-            border-radius: 30px;
-            z-index: 100;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.15);
-            transition: all 0.2s ease;
-        }
-        .back-link:hover {
-            background: white;
-            color: black;
-        }
+        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', 'Google Sans', Arial, sans-serif; background-color: #050510; }
+        #info { position: absolute; top: 20px; left: 20px; color: white; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 30px; z-index: 100; pointer-events: none; font-size: 16px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.15); }
+        #fps { position: absolute; top: 20px; right: 20px; color: white; background: rgba(0,0,0,0.6); padding: 10px 22px; border-radius: 30px; z-index: 100; font-family: monospace; font-size: 24px; font-weight: bold; pointer-events: none; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.15); }
+        .back-link { position: absolute; bottom: 20px; right: 20px; color: white; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 30px; z-index: 100; text-decoration: none; font-size: 14px; font-weight: 500; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.15); transition: all 0.2s ease; }
+        .back-link:hover { background: white; color: black; }
     </style>
     <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
-            }
-        }
+        { "imports": { "three": "https://unpkg.com/three@0.128.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/" } }
     </script>
 </head>
 <body>
     <div id="info">GPU Benchmark EXTREME | 25000 сфер</div>
     <div id="fps">FPS: --</div>
     <a href="../" class="back-link">← Назад</a>
-
     <script type="module">
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x050510);
-        scene.fog = new THREE.FogExp2(0x050510, 0.0012);
-
+        const scene = new THREE.Scene(); scene.background = new THREE.Color(0x050510); scene.fog = new THREE.FogExp2(0x050510, 0.0012);
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(10, 7, 15);
-        camera.lookAt(0, 0, 0);
-
+        camera.position.set(10, 7, 15); camera.lookAt(0, 0, 0);
         const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.0));
-        document.body.appendChild(renderer.domElement);
-
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.03;
-        controls.enableZoom = true;
-        controls.zoomSpeed = 0.8;
-        controls.rotateSpeed = 0.6;
-        controls.target.set(0, 0, 0);
-
-        const ambientLight = new THREE.AmbientLight(0x404060);
-        scene.add(ambientLight);
-        
-        const mainLight = new THREE.DirectionalLight(0xffffff, 1.0);
-        mainLight.position.set(5, 10, 3);
-        mainLight.castShadow = true;
-        mainLight.shadow.mapSize.width = 2048;
-        mainLight.shadow.mapSize.height = 2048;
-        scene.add(mainLight);
-        
-        const backLight = new THREE.PointLight(0x4466cc, 0.5);
-        backLight.position.set(-2, 2, -3);
-        scene.add(backLight);
-        
-        const fillLight = new THREE.PointLight(0xffaa66, 0.4);
-        fillLight.position.set(3, 1, 2);
-        scene.add(fillLight);
-        
-        const movingLight = new THREE.PointLight(0xff66aa, 0.9);
-        movingLight.castShadow = true;
-        movingLight.shadow.mapSize.width = 1024;
-        movingLight.shadow.mapSize.height = 1024;
-        scene.add(movingLight);
-
-        const count = 25000;
-        const geometry = new THREE.SphereGeometry(0.04, 12, 12);
-        const material = new THREE.MeshStandardMaterial({ roughness: 0.2, metalness: 0.9 });
-        const instancedMesh = new THREE.InstancedMesh(geometry, material, count);
-        const dummy = new THREE.Object3D();
-        const radius = 5.2;
-        
+        renderer.setSize(window.innerWidth, window.innerHeight); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.0)); document.body.appendChild(renderer.domElement);
+        const controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true; controls.dampingFactor = 0.03; controls.enableZoom = true; controls.zoomSpeed = 0.8; controls.rotateSpeed = 0.6; controls.target.set(0, 0, 0);
+        const ambientLight = new THREE.AmbientLight(0x404060); scene.add(ambientLight);
+        const mainLight = new THREE.DirectionalLight(0xffffff, 1.0); mainLight.position.set(5, 10, 3); mainLight.castShadow = true; mainLight.shadow.mapSize.width = 1024; mainLight.shadow.mapSize.height = 1024; mainLight.shadow.bias = -0.0005; mainLight.shadow.camera.far = 18.0; scene.add(mainLight);
+        const backLight = new THREE.PointLight(0x4466cc, 0.5); backLight.position.set(-2, 2, -3); scene.add(backLight);
+        const fillLight = new THREE.PointLight(0xffaa66, 0.4); fillLight.position.set(3, 1, 2); scene.add(fillLight);
+        const movingLight = new THREE.PointLight(0xff66aa, 0.9); movingLight.castShadow = true; movingLight.shadow.mapSize.width = 512; movingLight.shadow.mapSize.height = 512; movingLight.shadow.bias = -0.0005; movingLight.shadow.camera.far = 5.0; scene.add(movingLight);
+        const count = 25000; const geometry = new THREE.SphereGeometry(0.04, 12, 12); const material = new THREE.MeshStandardMaterial({ roughness: 0.2, metalness: 0.9 }); const instancedMesh = new THREE.InstancedMesh(geometry, material, count); const dummy = new THREE.Object3D(); const radius = 5.2;
         for (let i = 0; i < count; i++) {
-            const u = Math.random();
-            const v = Math.random();
-            const w = Math.random();
-            const theta = 2 * Math.PI * u;
-            const phi = Math.acos(2 * v - 1);
-            const r = radius * Math.cbrt(w);
-            const x = r * Math.sin(phi) * Math.cos(theta);
-            const y = r * Math.sin(phi) * Math.sin(theta);
-            const z = r * Math.cos(phi);
-            
-            dummy.position.set(x, y, z);
-            dummy.scale.setScalar(0.3 + Math.random() * 1.1);
-            dummy.updateMatrix();
-            instancedMesh.setMatrixAt(i, dummy.matrix);
-            
-            const hue = 0.0 + (r / radius) * 0.1;
-            const sat = 0.8 + (r / radius) * 0.2;
-            instancedMesh.setColorAt(i, new THREE.Color().setHSL(hue, sat, 0.5));
+            const u = Math.random(), v = Math.random(), w = Math.random(), theta = 2 * Math.PI * u, phi = Math.acos(2 * v - 1), r = radius * Math.cbrt(w), x = r * Math.sin(phi) * Math.cos(theta), y = r * Math.sin(phi) * Math.sin(theta), z = r * Math.cos(phi);
+            dummy.position.set(x, y, z); dummy.scale.setScalar(0.3 + Math.random() * 1.1); dummy.updateMatrix(); instancedMesh.setMatrixAt(i, dummy.matrix);
+            const hue = 0.0 + (r / radius) * 0.1; const sat = 0.8 + (r / radius) * 0.2; instancedMesh.setColorAt(i, new THREE.Color().setHSL(hue, sat, 0.5));
         }
-        
-        instancedMesh.instanceMatrix.needsUpdate = true;
-        instancedMesh.instanceColor.needsUpdate = true;
-        instancedMesh.castShadow = true;
-        instancedMesh.receiveShadow = true;
-        scene.add(instancedMesh);
-
-        const starsGeometry = new THREE.BufferGeometry();
-        const starsCount = 2500;
-        const starPositions = new Float32Array(starsCount * 3);
-        for (let i = 0; i < starsCount * 3; i += 3) {
-            starPositions[i] = (Math.random() - 0.5) * 300;
-            starPositions[i+1] = (Math.random() - 0.5) * 300;
-            starPositions[i+2] = (Math.random() - 0.5) * 300;
-        }
-        starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-        const starsMaterial = new THREE.PointsMaterial({color: 0xffffff, size: 0.1, transparent: true});
-        const stars = new THREE.Points(starsGeometry, starsMaterial);
-        scene.add(stars);
-
-        let time = 0;
-        let frameCount = 0;
-        let lastTime = performance.now();
-        const fpsElement = document.getElementById('fps');
-        
-        function updateFPS() {
-            frameCount++;
-            const now = performance.now();
-            if (now >= lastTime + 500) {
-                const fps = Math.round((frameCount * 1000) / (now - lastTime));
-                fpsElement.textContent = `FPS: ${fps}`;
-                if (fps < 30) fpsElement.style.color = '#ff6666';
-                else if (fps < 50) fpsElement.style.color = '#ffaa66';
-                else fpsElement.style.color = '#66ff66';
-                frameCount = 0;
-                lastTime = now;
-            }
-        }
-        
-        function animate() {
-            requestAnimationFrame(animate);
-            time += 0.006;
-            
-            movingLight.position.x = Math.sin(time) * 7;
-            movingLight.position.z = Math.cos(time * 0.5) * 7;
-            movingLight.position.y = 2.5 + Math.sin(time * 0.9) * 2.0;
-            
-            instancedMesh.rotation.y = time * 0.03;
-            instancedMesh.rotation.x = Math.sin(time * 0.08) * 0.08;
-            stars.rotation.y += 0.00003;
-            
-            controls.update();
-            renderer.render(scene, camera);
-            updateFPS();
-        }
-        
+        instancedMesh.instanceMatrix.needsUpdate = true; instancedMesh.instanceColor.needsUpdate = true; instancedMesh.castShadow = true; instancedMesh.receiveShadow = true; scene.add(instancedMesh);
+        const starsGeometry = new THREE.BufferGeometry(); const starsCount = 2500; const starPositions = new Float32Array(starsCount * 3);
+        for (let i = 0; i < starsCount * 3; i += 3) { starPositions[i] = (Math.random() - 0.5) * 300; starPositions[i+1] = (Math.random() - 0.5) * 300; starPositions[i+2] = (Math.random() - 0.5) * 300; }
+        starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3)); const starsMaterial = new THREE.PointsMaterial({color: 0xffffff, size: 0.1, transparent: true}); const stars = new THREE.Points(starsGeometry, starsMaterial); scene.add(stars);
+        let time = 0, frameCount = 0, lastTime = performance.now(); const fpsElement = document.getElementById('fps');
+        function updateFPS() { frameCount++; const now = performance.now(); if (now >= lastTime + 500) { const fps = Math.round((frameCount * 1000) / (now - lastTime)); fpsElement.textContent = `FPS: ${fps}`; fpsElement.style.color = fps < 30 ? '#ff6666' : fps < 50 ? '#ffaa66' : '#66ff66'; frameCount = 0; lastTime = now; } }
+        function animate() { requestAnimationFrame(animate); time += 0.006; movingLight.position.x = Math.sin(time) * 7; movingLight.position.z = Math.cos(time * 0.5) * 7; movingLight.position.y = 2.5 + Math.sin(time * 0.9) * 2.0; instancedMesh.rotation.y = time * 0.03; instancedMesh.rotation.x = Math.sin(time * 0.08) * 0.08; stars.rotation.y += 0.00003; controls.update(); renderer.render(scene, camera); updateFPS(); }
         animate();
-        
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.0));
-        });
+        window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.0)); });
     </script>
 </body>
 </html>
