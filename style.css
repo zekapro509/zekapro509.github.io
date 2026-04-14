@@ -1,17 +1,22 @@
-/* ===== БАЗОВЫЕ СТИЛИ ===== */
+/* ===== СБРОС НАСТРОЕК (чтобы не было пустоты) ===== */
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
     text-align: center;
     font-family: 'Google Sans', Arial, sans-serif;
     font-weight: 500;
-    margin: 0;
-    padding: 0;
     background-color: #ffffff;
     color: #000000;
-    min-height: 100vh;
+    /* Убираем min-height: 100vh, чтобы не было пустого скролла */
+    min-height: auto;
+    /* Если хочешь прижать кнопки к центру экрана, раскомментируй строки ниже */
+    /* display: flex;
+    flex-direction: column;
+    justify-content: center; */
 }
 
 h1 {
@@ -24,6 +29,7 @@ h1 {
 p {
     color: #333333;
     line-height: 1.5;
+    margin-bottom: 10px;
 }
 
 /* ===== КНОПКИ ===== */
@@ -32,7 +38,7 @@ p {
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    margin: 20px 0;
+    margin: 20px 0 30px 0; /* Отступ снизу, чтобы не липло к краю окна */
 }
 
 .btn {
@@ -59,7 +65,7 @@ p {
     transform: scale(1.05);
 }
 
-/* Совместимость со старым классом */
+/* Совместимость со старым классом (если где-то остался news-btn) */
 .news-btn {
     background-color: #000000;
     color: #ffffff;
@@ -115,7 +121,7 @@ p {
     transform: scale(1.1);
 }
 
-/* ===== НОВОСТИ (БЕЗ АНИМАЦИИ ПРИ НАВЕДЕНИИ) ===== */
+/* ===== НОВОСТИ (БЕЗ АНИМАЦИИ) ===== */
 #news-container {
     min-height: 200px;
     max-width: 700px;
@@ -250,7 +256,7 @@ p {
     font-style: normal;
 }
 
-/* ===== АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ ===== */
+/* ===== АДАПТИВНОСТЬ (Телефоны) ===== */
 @media (max-width: 768px) {
     h1 {
         font-size: 28px;
@@ -330,17 +336,4 @@ p {
         width: 240px;
         font-size: 18px;
     }
-}
-
-/* ===== УТИЛИТЫ ===== */
-.text-center {
-    text-align: center;
-}
-
-.mt-20 {
-    margin-top: 20px;
-}
-
-.mb-20 {
-    margin-bottom: 20px;
 }
