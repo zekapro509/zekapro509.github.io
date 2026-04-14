@@ -44,22 +44,6 @@
             border: 1px solid rgba(255,170,0,0.5);
             text-shadow: 0 0 10px rgba(255,170,0,0.5);
         }
-        .warning {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            color: #ff4444;
-            background: rgba(0,0,0,0.6);
-            padding: 8px 18px;
-            border-radius: 30px;
-            z-index: 100;
-            font-size: 14px;
-            font-weight: bold;
-            pointer-events: none;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,68,68,0.5);
-            text-shadow: 0 0 8px rgba(255,0,0,0.5);
-        }
         .back-link {
             position: absolute;
             bottom: 20px;
@@ -81,13 +65,6 @@
             color: black;
             border-color: #ffaa00;
         }
-        /* Мобилки — даже не пытайтесь */
-        @media (max-width: 768px) {
-            #info { font-size: 12px; padding: 6px 12px; }
-            #fps { font-size: 16px; padding: 6px 14px; }
-            .warning { font-size: 10px; padding: 4px 12px; }
-            .back-link { font-size: 12px; padding: 6px 14px; }
-        }
     </style>
     
     <script type="importmap">
@@ -108,13 +85,8 @@
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        // Определяем мобилки — для них всё отключаем, иначе краш
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
-                         || window.innerWidth < 768;
-
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x000000);
-        // Очень лёгкий туман, чтобы не жрать производительность
         scene.fog = new THREE.FogExp2(0x000000, 0.0008);
 
         const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -122,77 +94,61 @@
         camera.lookAt(0, 0, 0);
 
         const renderer = new THREE.WebGLRenderer({ 
-            antialias: !isMobile,
+            antialias: true,
             powerPreference: "high-performance",
-            precision: isMobile ? "mediump" : "highp" // На мобилках снижаем точность
+            precision: "highp"
         });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        
-        // Тени только на ПК
-        renderer.shadowMap.enabled = !isMobile;
-        if (!isMobile) {
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        }
-        
-        // Пиксели — минимум для мобилок
-        const pixelRatio = isMobile ? 1.0 : Math.min(window.devicePixelRatio, 2.0);
-        renderer.setPixelRatio(pixelRatio);
-        
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.0));
         document.body.appendChild(renderer.domElement);
 
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
-        controls.dampingFactor = isMobile ? 0.01 : 0.03;
+        controls.dampingFactor = 0.03;
         controls.enableZoom = true;
-        controls.zoomSpeed = isMobile ? 0.3 : 0.8;
-        controls.rotateSpeed = isMobile ? 0.2 : 0.6;
-        controls.enablePan = false; // Отключаем панорамирование для стабильности
+        controls.zoomSpeed = 0.8;
+        controls.rotateSpeed = 0.6;
+        controls.enablePan = false;
         controls.target.set(0, 0, 0);
-        controls.maxPolarAngle = Math.PI / 1.8; // Ограничиваем угол, чтобы не улететь
+        controls.maxPolarAngle = Math.PI / 1.8;
 
-        // Освещение — мощное, но оптимизированное
-        const ambientLight = new THREE.AmbientLight(0x404060, isMobile ? 0.5 : 0.8);
+        // Освещение
+        const ambientLight = new THREE.AmbientLight(0x404060, 0.8);
         scene.add(ambientLight);
         
-        const mainLight = new THREE.DirectionalLight(0xffeedd, isMobile ? 0.6 : 1.2);
+        const mainLight = new THREE.DirectionalLight(0xffeedd, 1.2);
         mainLight.position.set(5, 12, 4);
-        if (!isMobile) {
-            mainLight.castShadow = true;
-            mainLight.shadow.mapSize.width = 2048;
-            mainLight.shadow.mapSize.height = 2048;
-            mainLight.shadow.bias = -0.0001;
-        }
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.width = 2048;
+        mainLight.shadow.mapSize.height = 2048;
+        mainLight.shadow.bias = -0.0001;
         scene.add(mainLight);
         
-        const backLight = new THREE.PointLight(0x4466cc, isMobile ? 0.2 : 0.6);
+        const backLight = new THREE.PointLight(0x4466cc, 0.6);
         backLight.position.set(-3, 3, -5);
         scene.add(backLight);
         
-        const fillLight = new THREE.PointLight(0xffaa66, isMobile ? 0.15 : 0.5);
+        const fillLight = new THREE.PointLight(0xffaa66, 0.5);
         fillLight.position.set(4, 2, 3);
         scene.add(fillLight);
         
-        // Движущийся свет (только ПК)
-        let movingLight1, movingLight2;
-        if (!isMobile) {
-            movingLight1 = new THREE.PointLight(0xff4488, 0.8);
-            movingLight1.castShadow = true;
-            movingLight1.shadow.mapSize.width = 1024;
-            movingLight1.shadow.mapSize.height = 1024;
-            scene.add(movingLight1);
-            
-            movingLight2 = new THREE.PointLight(0x44aaff, 0.6);
-            movingLight2.castShadow = true;
-            movingLight2.shadow.mapSize.width = 1024;
-            movingLight2.shadow.mapSize.height = 1024;
-            scene.add(movingLight2);
-        }
+        const movingLight1 = new THREE.PointLight(0xff4488, 0.8);
+        movingLight1.castShadow = true;
+        movingLight1.shadow.mapSize.width = 1024;
+        movingLight1.shadow.mapSize.height = 1024;
+        scene.add(movingLight1);
+        
+        const movingLight2 = new THREE.PointLight(0x44aaff, 0.6);
+        movingLight2.castShadow = true;
+        movingLight2.shadow.mapSize.width = 1024;
+        movingLight2.shadow.mapSize.height = 1024;
+        scene.add(movingLight2);
 
-        // 50000 СФЕР — ЛЕГЕНДАРНЫЙ ТЕСТ
+        // 50000 сфер
         const count = 50000;
-        // Минимальная геометрия для мобилок
-        const sphereDetail = isMobile ? 5 : 14;
-        const geometry = new THREE.SphereGeometry(0.035, sphereDetail, sphereDetail);
+        const geometry = new THREE.SphereGeometry(0.035, 14, 14);
         const material = new THREE.MeshStandardMaterial({ 
             roughness: 0.2, 
             metalness: 0.95,
@@ -201,9 +157,8 @@
         });
         
         const instancedMesh = new THREE.InstancedMesh(geometry, material, count);
-        
         const dummy = new THREE.Object3D();
-        const radius = 5.0; // Большой радиус, чтобы не слипались
+        const radius = 5.0;
         
         for (let i = 0; i < count; i++) {
             const u = Math.random();
@@ -223,7 +178,6 @@
             dummy.updateMatrix();
             instancedMesh.setMatrixAt(i, dummy.matrix);
             
-            // Эпичный градиент: от ярко-жёлтого (центр) до тёмно-красного (край)
             const hue = 0.05 + (r / radius) * 0.15;
             const sat = 0.9;
             const light = 0.4 + (r / radius) * 0.4;
@@ -232,11 +186,11 @@
         
         instancedMesh.instanceMatrix.needsUpdate = true;
         instancedMesh.instanceColor.needsUpdate = true;
-        instancedMesh.castShadow = !isMobile;
-        instancedMesh.receiveShadow = !isMobile;
+        instancedMesh.castShadow = true;
+        instancedMesh.receiveShadow = true;
         scene.add(instancedMesh);
 
-        // Звёзды (много!)
+        // Звёзды
         const starsGeometry = new THREE.BufferGeometry();
         const starsCount = 4000;
         const starPositions = new Float32Array(starsCount * 3);
@@ -250,7 +204,6 @@
         const stars = new THREE.Points(starsGeometry, starsMaterial);
         scene.add(stars);
 
-        // Тайминг
         let time = 0;
         let frameCount = 0;
         let lastTime = performance.now();
@@ -262,7 +215,6 @@
             if (now >= lastTime + 500) {
                 const fps = Math.round((frameCount * 1000) / (now - lastTime));
                 fpsElement.textContent = `FPS: ${fps}`;
-                // Цвета для GOD-режима
                 if (fps < 20) fpsElement.style.color = '#ff4444';
                 else if (fps < 40) fpsElement.style.color = '#ffaa00';
                 else fpsElement.style.color = '#44ff88';
@@ -273,20 +225,15 @@
         
         function animate() {
             requestAnimationFrame(animate);
-            time += isMobile ? 0.001 : 0.005; // Очень медленное вращение для стабильности
+            time += 0.005;
             
-            if (!isMobile) {
-                if (movingLight1) {
-                    movingLight1.position.x = Math.sin(time * 0.8) * 8;
-                    movingLight1.position.z = Math.cos(time * 0.6) * 8;
-                    movingLight1.position.y = 3.0 + Math.sin(time * 1.0) * 2.0;
-                }
-                if (movingLight2) {
-                    movingLight2.position.x = Math.cos(time * 0.5) * 7;
-                    movingLight2.position.z = Math.sin(time * 0.7) * 7;
-                    movingLight2.position.y = 2.0 + Math.cos(time * 0.9) * 2.5;
-                }
-            }
+            movingLight1.position.x = Math.sin(time * 0.8) * 8;
+            movingLight1.position.z = Math.cos(time * 0.6) * 8;
+            movingLight1.position.y = 3.0 + Math.sin(time * 1.0) * 2.0;
+            
+            movingLight2.position.x = Math.cos(time * 0.5) * 7;
+            movingLight2.position.z = Math.sin(time * 0.7) * 7;
+            movingLight2.position.y = 2.0 + Math.cos(time * 0.9) * 2.5;
             
             instancedMesh.rotation.y = time * 0.025;
             instancedMesh.rotation.x = Math.sin(time * 0.06) * 0.06;
@@ -304,16 +251,8 @@
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-            
-            const newIsMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
-                                || window.innerWidth < 768;
-            const newPixelRatio = newIsMobile ? 1.0 : Math.min(window.devicePixelRatio, 2.0);
-            renderer.setPixelRatio(newPixelRatio);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.0));
         });
-        
-        // Предупреждение в консоли (для крутых)
-        console.log('%c🔥 GOD MODE ACTIVATED — 50 000 SPHERES 🔥', 'color: #ffaa00; font-size: 16px; font-weight: bold;');
-        console.log('%cТолько для топовых GPU. Если твой ПК вывозит — ты легенда.', 'color: #44ff88; font-size: 12px;');
     </script>
 </body>
 </html>
