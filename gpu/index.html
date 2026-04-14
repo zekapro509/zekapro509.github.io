@@ -52,25 +52,6 @@
             display: block;
         }
         
-        /* На мобилках: скрываем десктоп, показываем заглушку */
-        @media (max-width: 768px) {
-            .desktop-content {
-                display: none !important;
-            }
-            
-            .mobile-block {
-                display: block !important;
-            }
-            
-            .back-btn {
-                display: none !important;
-            }
-            
-            body {
-                padding-top: 20px;
-            }
-        }
-        
         /* Стили для десктопа */
         h1 {
             margin-top: 15px;
@@ -121,6 +102,20 @@
         <p>Этот бенчмарк не поддерживается на мобильных устройствах.</p>
         <a href="../" class="menu-btn">Главное меню</a>
     </div>
+
+    <script>
+        // Проверка по User Agent
+        var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+            // Скрываем десктопный контент
+            document.querySelector('.desktop-content').style.display = 'none';
+            // Показываем мобильную заглушку
+            document.querySelector('.mobile-block').style.display = 'block';
+            // Скрываем кнопку "Назад"
+            document.querySelector('.back-btn').style.display = 'none';
+        }
+    </script>
 
     <script src="../js/browser-check.js"></script>
 </body>
