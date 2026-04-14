@@ -1,81 +1,127 @@
-<style>
-    .mobile-block {
-        display: none;
-        text-align: center;
-        padding: 40px 20px;
-        max-width: 500px;
-        margin: 0 auto;
-    }
-    
-    .mobile-block h2 {
-        font-size: 24px;
-        margin-bottom: 20px;
-        color: #000;
-    }
-    
-    .mobile-block p {
-        font-size: 16px;
-        color: #333;
-        margin-bottom: 30px;
-    }
-    
-    .menu-btn {
-        display: inline-block;
-        background: #000;
-        color: #fff;
-        padding: 14px 32px;
-        border-radius: 50px;
-        text-decoration: none;
-        font-size: 18px;
-        font-weight: 500;
-        border: 2px solid #000;
-        transition: all 0.3s ease; /* Добавил transition */
-    }
-    
-    /* ВОТ ЭТОГО НЕ ХВАТАЛО */
-    .menu-btn:hover {
-        background: #fff;
-        color: #000;
-        transform: scale(1.05); /* Такое же увеличение, как у всех кнопок */
-    }
-    
-    .desktop-content {
-        display: block;
-    }
-    
-    @media (max-width: 768px) {
-        .desktop-content {
-            display: none !important;
-        }
-        
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPU Benchmark — TLC zekapro509</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        /* Заглушка для мобильных — по умолчанию скрыта */
         .mobile-block {
-            display: block !important;
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 500px;
+            margin: 0 auto;
         }
         
-        .back-btn {
-            display: none !important;
+        .mobile-block h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #000;
         }
-    }
-    
-    h1 {
-        margin-top: 15px;
-        margin-bottom: 15px;
-        font-size: 32px;
-    }
-    
-    .buttons {
-        gap: 10px;
-        margin: 10px 0;
-    }
-    
-    .btn {
-        padding: 12px 24px;
-        font-size: 20px;
-        width: 260px;
-    }
-    
-    .btn span {
-        font-size: 13px;
-        opacity: 0.7;
-    }
-</style>
+        
+        .mobile-block p {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .menu-btn {
+            display: inline-block;
+            background: #000;
+            color: #fff;
+            padding: 14px 32px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 500;
+            border: 2px solid #000;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-btn:hover {
+            background: #fff;
+            color: #000;
+            transform: scale(1.05);
+        }
+        
+        /* Десктопный контент — по умолчанию виден */
+        .desktop-content {
+            display: block;
+        }
+        
+        /* На мобилках: скрываем десктоп, показываем заглушку */
+        @media (max-width: 768px) {
+            .desktop-content {
+                display: none !important;
+            }
+            
+            .mobile-block {
+                display: block !important;
+            }
+            
+            .back-btn {
+                display: none !important;
+            }
+            
+            body {
+                padding-top: 20px;
+            }
+        }
+        
+        /* Стили для десктопа */
+        h1 {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            font-size: 32px;
+        }
+        
+        .buttons {
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            font-size: 20px;
+            width: 260px;
+        }
+        
+        .btn span {
+            font-size: 13px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <!-- Кнопка назад (только на ПК) -->
+    <a href="../" class="back-btn" aria-label="Назад">←</a>
+
+    <!-- Контент для ПК -->
+    <div class="desktop-content">
+        <div class="container">
+            <h1>GPU Benchmark</h1>
+
+            <div class="buttons">
+                <a href="low/" class="btn">Low<br><span>1000 сфер</span></a>
+                <a href="medium/" class="btn">Medium<br><span>2500 сфер</span></a>
+                <a href="high/" class="btn">High<br><span>5000 сфер</span></a>
+                <a href="ultra/" class="btn">Ultra<br><span>10000 сфер</span></a>
+                <a href="extreme/" class="btn">Extreme<br><span>20000 сфер</span></a>
+                <a href="god/" class="btn">God<br><span>50000 сфер</span></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Заглушка для мобил -->
+    <div class="mobile-block">
+        <h2>GPU Benchmark</h2>
+        <p>Этот бенчмарк не поддерживается на мобильных устройствах.</p>
+        <a href="../" class="menu-btn">Главное меню</a>
+    </div>
+
+    <script src="../js/browser-check.js"></script>
+</body>
+</html>
