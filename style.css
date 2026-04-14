@@ -338,41 +338,39 @@ p {
     }
 }
 
-/* ===== АДАПТАЦИЯ КНОПКИ НАЗАД (ПК = fixed, Телефон = static) ===== */
+/* ===== ФИНАЛЬНАЯ АДАПТАЦИЯ КНОПКИ НАЗАД ===== */
+/* На ПК всё остается как было (fixed) */
+/* На телефонах кнопка static и в левом углу */
+
 @media (max-width: 768px) {
-    /* Убиваем fixed позиционирование */
     .back-btn {
-        position: static !important; /* Кнопка встаёт в общий поток */
-        display: inline-flex !important; /* Чтобы была по центру, если надо */
-        margin: 15px auto 5px auto !important; /* Отступы сверху и снизу */
-        width: 50px;
-        height: 50px;
+        position: static !important; /* Убираем fixed */
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        margin-left: 15px !important; /* Прижимаем к левому краю */
+        margin-top: 15px !important;
+        margin-bottom: 5px !important;
+        margin-right: auto !important; /* Слева, но не по центру */
+        width: 45px;
+        height: 45px;
         border-radius: 50%;
         background-color: #000000;
         color: #ffffff;
-        /* Убираем координаты top/left */
         top: auto;
         left: auto;
-        box-shadow: none;
     }
     
-    /* Даём заголовку нормально дышать, убираем принудительные отступы */
     h1 {
-        padding-left: 15px !important;
-        padding-right: 15px;
+        padding-left: 20px !important;
+        padding-right: 20px;
         margin-top: 5px !important;
         font-size: 26px !important;
+        text-align: center; /* Текст заголовка по центру */
     }
-
-    /* Обёртка для всего (если нет контейнера, центрируем через body) */
-    body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    /* На всякий случай убираем лишние фиксы, если они были */
-    .winpe-info {
-        margin-top: 10px;
+    
+    p {
+        padding-left: 20px;
+        padding-right: 20px;
     }
 }
