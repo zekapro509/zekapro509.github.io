@@ -27,9 +27,13 @@
                 })
                 .then(function(data) {
                     if (data.news && data.news.length > 0) {
-                        // Сортировка по дате (новые сверху)
+                        // Сортировка по дате ДД.ММ.ГГГГ (новые сверху)
                         data.news.sort(function(a, b) {
-                            return new Date(b.date) - new Date(a.date);
+                            var partsA = a.date.split('.');
+                            var partsB = b.date.split('.');
+                            var dateA = new Date(partsA[2], partsA[1] - 1, partsA[0]);
+                            var dateB = new Date(partsB[2], partsB[1] - 1, partsB[0]);
+                            return dateB - dateA;
                         });
                         
                         container.innerHTML = '';
@@ -38,11 +42,7 @@
                             var article = document.createElement('article');
                             article.className = 'news-item';
                             
-                            // Форматирование даты из 2026-04-13 в 13.04.2026
-                            var parts = item.date.split('-');
-                            var formattedDate = parts[2] + '.' + parts[1] + '.' + parts[0];
-                            
-                            article.innerHTML = '<h3>' + formattedDate + ' — ' + item.title + '</h3>' +
+                            article.innerHTML = '<h3>' + item.date + ' — ' + item.title + '</h3>' +
                                              '<p>' + item.content + '</p>';
                             container.appendChild(article);
                         });
