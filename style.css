@@ -1,3 +1,8 @@
+/* ===== БАЗОВЫЕ СТИЛИ ===== */
+* {
+    box-sizing: border-box;
+}
+
 body {
     text-align: center;
     font-family: 'Google Sans', Arial, sans-serif;
@@ -6,23 +11,22 @@ body {
     padding: 0;
     background-color: #ffffff;
     color: #000000;
-}
-
-.white-text {
-    color: white;
-    text-shadow: 
-        1px 1px 0 black,
-        -1px -1px 0 black,
-        1px -1px 0 black,
-        -1px 1px 0 black;
+    min-height: 100vh;
 }
 
 h1 {
-    color: black;
-    font-family: 'Google Sans', Arial, sans-serif;
+    color: #000000;
     font-weight: 700;
+    margin-top: 30px;
+    margin-bottom: 20px;
 }
 
+p {
+    color: #333333;
+    line-height: 1.5;
+}
+
+/* ===== КНОПКИ ===== */
 .buttons {
     display: flex;
     flex-direction: column;
@@ -31,6 +35,31 @@ h1 {
     margin: 20px 0;
 }
 
+.btn {
+    background-color: #000000;
+    color: #ffffff;
+    border: 2px solid #000000;
+    padding: 16px 32px;
+    font-size: 24px;
+    font-family: 'Google Sans', Arial, sans-serif;
+    font-weight: 500;
+    border-radius: 90px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 200px;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn:hover {
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+    transform: scale(1.05);
+}
+
+/* Совместимость со старым классом */
 .news-btn {
     background-color: #000000;
     color: #ffffff;
@@ -41,38 +70,102 @@ h1 {
     font-weight: 500;
     border-radius: 90px;
     cursor: pointer;
-    transition: 0.3s;
+    transition: all 0.3s ease;
     width: 200px;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
 }
 
 .news-btn:hover {
     background-color: #ffffff;
     color: #000000;
     border: 2px solid #000000;
+    transform: scale(1.05);
+}
+
+/* ===== КНОПКА НАЗАД ===== */
+.back-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: #000000;
+    color: #ffffff;
+    border: 2px solid #000000;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-family: 'Google Sans', Arial, sans-serif;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.back-btn:hover {
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+    transform: scale(1.1);
+}
+
+/* ===== НОВОСТИ ===== */
+#news-container {
+    min-height: 200px;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
 .news-item {
     text-align: left;
     max-width: 600px;
     margin: 20px auto;
-    padding: 15px;
-    background-color: #f0f0f0;
-    border-radius: 10px;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 16px;
+    transition: all 0.2s ease;
+    border: 1px solid #e0e0e0;
+}
+
+.news-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
 }
 
 .news-item h3 {
-    color: #000;
+    color: #000000;
     margin-top: 0;
-    font-family: 'Google Sans', Arial, sans-serif;
+    margin-bottom: 12px;
     font-weight: 700;
+    font-size: 20px;
 }
 
 .news-item p {
-    color: #1e1e1e;
-    font-family: 'Google Sans', Arial, sans-serif;
-    font-weight: 500;
+    color: #333333;
+    margin: 0;
+    line-height: 1.6;
 }
 
+.loading {
+    color: #666666;
+    font-style: italic;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* ===== WINPE СТРАНИЦА ===== */
 .winpe-info {
     display: flex;
     justify-content: center;
@@ -80,43 +173,188 @@ h1 {
     margin: 30px auto;
     max-width: 800px;
     flex-wrap: wrap;
+    padding: 0 20px;
 }
 
-.winpe-version, .winpe-features {
-    background-color: #f0f0f0;
-    padding: 20px;
+.winpe-version,
+.winpe-features {
+    background-color: #f5f5f5;
+    padding: 25px;
     border-radius: 20px;
     text-align: left;
     flex: 1;
-    min-width: 200px;
+    min-width: 250px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.2s ease;
 }
 
-.winpe-version h3, .winpe-features h3 {
-    color: #000;
+.winpe-version:hover,
+.winpe-features:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+}
+
+.winpe-version h3,
+.winpe-features h3 {
+    color: #000000;
     margin-top: 0;
-    font-family: 'Google Sans', Arial, sans-serif;
+    margin-bottom: 15px;
     font-weight: 700;
+    font-size: 22px;
 }
 
-.winpe-version p, .winpe-features li {
-    color: #333;
-    font-family: 'Google Sans', Arial, sans-serif;
-    font-weight: 500;
+.winpe-version p {
+    color: #333333;
+    margin: 8px 0;
 }
 
 .winpe-features ul {
     padding-left: 20px;
     list-style: none;
+    margin: 0;
+}
+
+.winpe-features li {
+    color: #333333;
+    padding: 5px 0;
+    position: relative;
+}
+
+.winpe-features li:before {
+    content: "•";
+    color: #000000;
+    font-weight: bold;
+    position: absolute;
+    left: -20px;
 }
 
 .download-section {
     margin: 30px 0;
+    padding: 20px;
 }
 
 .note {
-    font-size: 12px;
-    color: #999;
+    font-size: 13px;
+    color: #999999;
     margin-top: 10px;
-    font-family: 'Google Sans', Arial, sans-serif;
-    font-weight: 500;
+    font-style: italic;
+}
+
+/* ===== GPU BENCHMARK ===== */
+.container {
+    text-align: center;
+    padding: 20px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.container h1 {
+    font-size: 36px;
+    margin-bottom: 40px;
+}
+
+.container .btn {
+    width: 280px;
+}
+
+.container .note {
+    margin-top: 40px;
+    font-size: 14px;
+    color: #555555;
+    font-style: normal;
+}
+
+/* ===== АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ ===== */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 28px;
+        margin-top: 70px;
+    }
+    
+    .btn,
+    .news-btn {
+        font-size: 20px;
+        padding: 14px 24px;
+        width: 180px;
+    }
+    
+    .back-btn {
+        top: 15px;
+        left: 15px;
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+    }
+    
+    .winpe-info {
+        gap: 20px;
+    }
+    
+    .winpe-version,
+    .winpe-features {
+        padding: 20px;
+        min-width: 100%;
+    }
+    
+    .news-item {
+        margin: 15px auto;
+        padding: 15px;
+    }
+    
+    .news-item h3 {
+        font-size: 18px;
+    }
+    
+    .container h1 {
+        font-size: 28px;
+        margin-bottom: 30px;
+    }
+    
+    .container .btn {
+        width: 260px;
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 24px;
+    }
+    
+    .btn,
+    .news-btn {
+        font-size: 18px;
+        padding: 12px 20px;
+        width: 160px;
+    }
+    
+    .back-btn {
+        top: 10px;
+        left: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+    
+    .container h1 {
+        font-size: 24px;
+    }
+    
+    .container .btn {
+        width: 240px;
+        font-size: 18px;
+    }
+}
+
+/* ===== УТИЛИТЫ ===== */
+.text-center {
+    text-align: center;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.mb-20 {
+    margin-bottom: 20px;
 }
