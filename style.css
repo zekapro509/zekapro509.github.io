@@ -337,3 +337,50 @@ p {
         font-size: 18px;
     }
 }
+
+/* ===== ФИКС ДЛЯ ТЕЛЕФОНОВ (WinPE) ===== */
+@media (max-width: 600px) {
+    /* Заголовок - разрешаем перенос и уменьшаем шрифт */
+    h1 {
+        font-size: 24px !important;
+        word-break: break-word;
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-top: 70px !important; /* Чтобы не заезжало под кнопку "Назад" */
+    }
+
+    /* Подзаголовок */
+    p {
+        font-size: 14px;
+        padding-left: 15px;
+        padding-right: 15px;
+        word-break: break-word;
+    }
+
+    /* Блоки с инфой (Версия: 1.0 и Что внутри) */
+    .winpe-version,
+    .winpe-features {
+        padding: 15px !important; /* Уменьшаем внутренние отступы */
+        min-width: auto !important; /* Разрешаем блоку сжиматься */
+        width: 90%; /* Занимаем почти весь экран */
+        margin: 0 auto; /* Центрируем */
+    }
+
+    .winpe-version h3,
+    .winpe-features h3 {
+        font-size: 18px !important;
+    }
+
+    /* Текст внутри "Что внутри" */
+    .winpe-features li {
+        font-size: 14px;
+        padding: 3px 0;
+    }
+
+    /* Кнопка Скачать */
+    .btn {
+        font-size: 18px !important;
+        width: 220px !important;
+        padding: 14px 20px !important;
+    }
+}
