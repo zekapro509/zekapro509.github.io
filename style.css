@@ -338,15 +338,17 @@ p {
     }
 }
 
-/* ===== ФИКС ДЛЯ ТЕЛЕФОНОВ (WinPE) ===== */
+/* ===== ФИНАЛЬНЫЙ ФИКС ДЛЯ ТЕЛЕФОНОВ (чтобы кнопка НАЗАД не закрывала текст) ===== */
 @media (max-width: 600px) {
-    /* Заголовок - разрешаем перенос и уменьшаем шрифт */
+    /* Заголовок - добавляем отступ слева, чтобы уехать из-под кнопки */
     h1 {
         font-size: 24px !important;
         word-break: break-word;
-        padding-left: 10px;
-        padding-right: 10px;
-        margin-top: 70px !important; /* Чтобы не заезжало под кнопку "Назад" */
+        padding-left: 60px !important;  /* <--- ВОТ ЭТО ГЛАВНОЕ! Отодвигаем текст от левого края */
+        padding-right: 15px;
+        margin-top: 25px !important;
+        margin-bottom: 15px;
+        text-align: center; /* Оставляем центр, но с учетом отступа */
     }
 
     /* Подзаголовок */
@@ -360,10 +362,10 @@ p {
     /* Блоки с инфой (Версия: 1.0 и Что внутри) */
     .winpe-version,
     .winpe-features {
-        padding: 15px !important; /* Уменьшаем внутренние отступы */
-        min-width: auto !important; /* Разрешаем блоку сжиматься */
-        width: 90%; /* Занимаем почти весь экран */
-        margin: 0 auto; /* Центрируем */
+        padding: 15px !important;
+        min-width: auto !important;
+        width: 90%;
+        margin: 0 auto;
     }
 
     .winpe-version h3,
@@ -371,7 +373,6 @@ p {
         font-size: 18px !important;
     }
 
-    /* Текст внутри "Что внутри" */
     .winpe-features li {
         font-size: 14px;
         padding: 3px 0;
@@ -382,5 +383,14 @@ p {
         font-size: 18px !important;
         width: 220px !important;
         padding: 14px 20px !important;
+    }
+    
+    /* Саму кнопку НАЗАД можно чуть уменьшить на телефоне */
+    .back-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 22px;
+        top: 15px;
+        left: 10px;
     }
 }
