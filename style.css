@@ -115,7 +115,7 @@ p {
     transform: scale(1.1);
 }
 
-/* ===== НОВОСТИ ===== */
+/* ===== НОВОСТИ (БЕЗ АНИМАЦИИ ПРИ НАВЕДЕНИИ) ===== */
 #news-container {
     min-height: 200px;
     max-width: 700px;
@@ -130,14 +130,7 @@ p {
     padding: 20px;
     background-color: #f5f5f5;
     border-radius: 16px;
-    transition: all 0.2s ease;
     border: 1px solid #e0e0e0;
-}
-
-.news-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    background-color: #ffffff;
 }
 
 .news-item h3 {
@@ -185,13 +178,6 @@ p {
     flex: 1;
     min-width: 250px;
     border: 1px solid #e0e0e0;
-    transition: all 0.2s ease;
-}
-
-.winpe-version:hover,
-.winpe-features:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    background-color: #ffffff;
 }
 
 .winpe-version h3,
