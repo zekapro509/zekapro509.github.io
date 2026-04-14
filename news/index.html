@@ -2,67 +2,54 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Новости - TLC zekapro509</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новости — TLC zekapro509</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../style.css">
-    <style>
-        .back-btn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background-color: #000000;
-            color: #ffffff;
-            border: 2px solid #000000;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            transition: 0.3s;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            font-family: 'Google Sans', Arial, sans-serif;
-            font-weight: 500;
-        }
-        .back-btn:hover {
-            background-color: #ffffff;
-            color: #000000;
-            border: 2px solid #000000;
-        }
-    </style>
 </head>
 <body>
-    <a href="../" class="back-btn">←</a>
+    <a href="../" class="back-btn" aria-label="Назад">←</a>
 
     <h1>Новости</h1>
 
-    <div id="news-container"></div>
+    <div id="news-container">
+        <p class="loading">Загрузка новостей...</p>
+    </div>
 
     <script>
         async function loadNews() {
+            const container = document.getElementById('news-container');
+            
             try {
-                const response = await fetch('news.json?t=' + Date.now());
-                if (!response.ok) throw new Error('Файл не найден');
+                const response = await fetch(`news.json?t=${Date.now()}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error: ${response.status}`);
+                }
+                
                 const data = await response.json();
-                const container = document.getElementById('news-container');
-                container.innerHTML = '';
+                
                 if (data.news && data.news.length > 0) {
-                    data.news.forEach(news => {
-                        const div = document.createElement('div');
-                        div.className = 'news-item';
-                        div.innerHTML = `<h3>${news.date} — ${news.title}</h3><p>${news.content}</p>`;
-                        container.appendChild(div);
+                    container.innerHTML = '';
+                    
+                    data.news.forEach(item => {
+                        const article = document.createElement('article');
+                        article.className = 'news-item';
+                        article.innerHTML = `
+                            <h3>${item.date} — ${item.title}</h3>
+                            <p>${item.content}</p>
+                        `;
+                        container.appendChild(article);
                     });
                 } else {
-                    container.innerHTML = '<p>Новостей пока нет.</p>';
+                    container.innerHTML = '<p>😴 Новостей пока нет.</p>';
                 }
             } catch (error) {
-                document.getElementById('news-container').innerHTML = '<p>Ошибка загрузки новостей.</p>';
+                console.error('Ошибка загрузки новостей:', error);
+                container.innerHTML = '<p>❌ Не удалось загрузить новости. Попробуйте позже.</p>';
             }
         }
+        
         loadNews();
     </script>
 </body>
