@@ -4,8 +4,24 @@ let myPeerId;
 let isConnected = false;
 let encryptionKey = null;
 let isInitiator = false;
+let currentRoomId = null;
 
-// Инициализация PeerJS
+// Определяем режим: главная или чат
+const hash = window.location.hash.substring(1);
+if (hash) {
+    // Режим чата — подключаемся к комнате
+    document.getElementById('homePage').style.display = 'none';
+    document.getElementById('chatPage').style.display = 'block';
+    document.getElementById('backBtn').style.display = 'none';
+    currentRoomId = hash;
+    initPeerAndJoinRoom(hash);
+} else {
+    // Главная страница
+    document.getElementById('homePage').style.display = 'block';
+    document.getElementById('chatPage').style.display = 'none';
+    initPeer();
+}
+
 function initPeer() {
     const randomId = 'tlc_' + Math.random().toString(36).substring(2, 12);
     
@@ -19,16 +35,17 @@ function initPeer() {
             iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
                 { urls: 'stun:stun1.l.google.com:19302' },
-                { urls: 'stun:stun2.l.google.com:19302' },
-                { urls: 'stun:stun3.l.google.com:19302' },
-                { urls: 'stun:stun4.l.google.com:19302' }
+                { urls: 'stun:stun2.l.google.com:19302' }
             ]
         }
     });
 
     peer.on('open', function(id) {
         myPeerId = id;
-        document.getElementById('myPeerId').textContent = id;
+        const idElement = document.getElementById('myPeerId');
+        if (idElement) {
+            idElement.textContent = id;
+        }
     });
 
     peer.on('connection', function(connection) {
@@ -41,37 +58,135 @@ function initPeer() {
         isInitiator = false;
         setupConnection();
         
-        document.getElementById('connectionStatus').className = 'status-badge status-connected';
-        document.getElementById('connectionStatus').textContent = 'Подключен';
-        document.getElementById('connectedPeerId').textContent = conn.peer.substring(0, 12) + '...';
-        document.getElementById('chatArea').style.display = 'block';
-        document.getElementById('encryptionInfo').style.display = 'flex';
-        isConnected = true;
-        
-        generateAndSendKey();
+        if (document.getElementById('homePage').style.display !== 'none') {
+            switchToChatMode(conn.peer);
+        }
     });
 
     peer.on('error', function(err) {
         console.error('Peer error:', err);
-        if (err.type === 'peer-unavailable') {
-            alert('Собеседник не найден. Проверьте ID.');
-        } else if (err.type === 'server-error') {
-            document.getElementById('myPeerId').textContent = 'Ошибка сервера. Попробуйте обновить страницу.';
-        } else if (err.type === 'network') {
-            document.getElementById('myPeerId').textContent = 'Ошибка сети. Проверьте интернет.';
-        } else {
-            document.getElementById('myPeerId').textContent = 'Ошибка: ' + err.type;
+        const idElement = document.getElementById('myPeerId');
+        if (idElement) {
+            if (err.type === 'peer-unavailable') {
+                alert('Собеседник не найден. Проверьте ID.');
+            } else if (err.type === 'server-error') {
+                idElement.textContent = 'Ошибка сервера. Обновите страницу.';
+            } else if (err.type === 'network') {
+                idElement.textContent = 'Ошибка сети. Проверьте интернет.';
+            } else {
+                idElement.textContent = 'Ошибка: ' + err.type;
+            }
         }
     });
 
     peer.on('disconnected', function() {
-        document.getElementById('myPeerId').textContent = 'Переподключение...';
+        const idElement = document.getElementById('myPeerId');
+        if (idElement) {
+            idElement.textContent = 'Переподключение...';
+        }
         setTimeout(function() {
             if (peer && !peer.destroyed) {
                 peer.reconnect();
             }
         }, 2000);
     });
+}
+
+function initPeerAndJoinRoom(roomId) {
+    const randomId = 'tlc_' + Math.random().toString(36).substring(2, 12);
+    
+    peer = new Peer(randomId, {
+        host: 'peerjs-server.onrender.com',
+        port: 443,
+        secure: true,
+        debug: 0,
+        path: '/',
+        config: {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' }
+            ]
+        }
+    });
+
+    peer.on('open', function() {
+        // Подключаемся к создателю комнаты
+        connectToRoom(roomId);
+    });
+
+    peer.on('connection', function(connection) {
+        if (isConnected) {
+            connection.close();
+            return;
+        }
+        
+        conn = connection;
+        isInitiator = false;
+        setupConnection();
+        document.getElementById('chatStatus').textContent = 'Подключен';
+        isConnected = true;
+    });
+
+    peer.on('error', function(err) {
+        console.error('Peer error:', err);
+        document.getElementById('chatStatus').textContent = 'Ошибка подключения';
+        if (err.type === 'peer-unavailable') {
+            alert('Комната не найдена. Возможно, создатель вышел.');
+        }
+    });
+}
+
+function connectToRoom(roomId) {
+    document.getElementById('chatPeerId').textContent = roomId.substring(0, 12) + '...';
+    document.getElementById('chatStatus').textContent = 'Подключение...';
+    
+    conn = peer.connect(roomId, {
+        reliable: true
+    });
+
+    isInitiator = true;
+
+    conn.on('open', function() {
+        setupConnection();
+        document.getElementById('chatStatus').textContent = 'Подключен';
+        isConnected = true;
+        generateAndSendKey();
+    });
+
+    conn.on('error', function(err) {
+        document.getElementById('chatStatus').textContent = 'Не удалось подключиться';
+        console.error(err);
+    });
+}
+
+function createRoom() {
+    if (!myPeerId) {
+        alert('ID ещё не сгенерирован. Подождите секунду.');
+        return;
+    }
+    
+    const roomUrl = window.location.href.split('#')[0] + '#' + myPeerId;
+    
+    // Копируем ссылку
+    navigator.clipboard.writeText(roomUrl).then(function() {
+        alert('Ссылка на комнату скопирована. Отправьте её собеседнику.\n\nОставайтесь на этой странице и ждите подключения.');
+    }).catch(function() {
+        prompt('Ссылка на комнату (скопируйте и отправьте собеседнику):', roomUrl);
+    });
+    
+    // Ждём входящего подключения
+    document.getElementById('connectionStatus').textContent = 'Ожидание...';
+}
+
+function switchToChatMode(peerId) {
+    document.getElementById('homePage').style.display = 'none';
+    document.getElementById('chatPage').style.display = 'block';
+    document.getElementById('backBtn').style.display = 'none';
+    document.getElementById('chatPeerId').textContent = peerId.substring(0, 12) + '...';
+    
+    // Обновляем URL без перезагрузки
+    window.location.hash = myPeerId;
 }
 
 function setupConnection() {
@@ -85,6 +200,9 @@ function setupConnection() {
     });
 
     conn.on('close', function() {
+        if (document.getElementById('chatPage').style.display === 'block') {
+            document.getElementById('chatStatus').textContent = 'Соединение разорвано';
+        }
         resetConnection();
     });
 }
@@ -144,13 +262,9 @@ function connectToPeer() {
 
     conn.on('open', function() {
         setupConnection();
-        document.getElementById('connectionStatus').className = 'status-badge status-connected';
-        document.getElementById('connectionStatus').textContent = 'Подключен';
-        document.getElementById('connectedPeerId').textContent = remoteId.substring(0, 12) + '...';
-        document.getElementById('chatArea').style.display = 'block';
+        switchToChatMode(remoteId);
         document.getElementById('encryptionInfo').style.display = 'flex';
         isConnected = true;
-        
         generateAndSendKey();
     });
 
@@ -243,6 +357,17 @@ function copyMyId() {
     });
 }
 
+function disconnectAndGoHome() {
+    if (conn) {
+        conn.close();
+    }
+    resetConnection();
+    
+    // Очищаем хэш и возвращаемся на главную
+    window.location.hash = '';
+    window.location.reload();
+}
+
 function disconnect() {
     if (conn) {
         conn.close();
@@ -256,18 +381,13 @@ function resetConnection() {
     encryptionKey = null;
     isInitiator = false;
     
-    document.getElementById('connectionStatus').className = 'status-badge status-disconnected';
-    document.getElementById('connectionStatus').textContent = 'Не подключен';
-    document.getElementById('chatArea').style.display = 'none';
-    document.getElementById('encryptionInfo').style.display = 'none';
-    
-    const messagesBox = document.getElementById('messagesBox');
-    messagesBox.innerHTML = '<div class="empty-chat">Сообщений пока нет</div>';
-    
-    document.getElementById('remotePeerId').value = '';
-    document.getElementById('messageInput').value = '';
+    const connectionStatus = document.getElementById('connectionStatus');
+    if (connectionStatus) {
+        connectionStatus.className = 'status-badge status-disconnected';
+        connectionStatus.textContent = 'Не подключен';
+    }
 }
 
 window.onload = function() {
-    initPeer();
+    // Уже инициализировано выше
 };
