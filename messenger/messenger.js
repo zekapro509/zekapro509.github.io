@@ -50,10 +50,16 @@ function showHomePage() {
         history.replaceState(null, '', window.location.pathname);
     }
     
-    // Пересоздаём Peer если нужно
-    if (!peer || peer.destroyed) {
-        initPeer();
+    // Очищаем поля ввода
+    document.getElementById('remotePeerId').value = '';
+    document.getElementById('connectionStatus').className = 'status-badge status-disconnected';
+    document.getElementById('connectionStatus').textContent = 'Не подключен';
+    
+    // Пересоздаём Peer если нужно — это сгенерирует новый ID
+    if (peer && !peer.destroyed) {
+        peer.destroy();
     }
+    initPeer();
 }
 
 function joinRoomFromHash(roomId) {
@@ -205,23 +211,6 @@ function connectToRoom(roomId) {
         document.getElementById('chatStatus').textContent = 'Не удалось подключиться';
         console.error(err);
     });
-}
-
-function createRoom() {
-    if (!myPeerId) {
-        alert('ID ещё не сгенерирован. Подождите секунду.');
-        return;
-    }
-    
-    const roomUrl = window.location.href.split('#')[0] + '#' + myPeerId;
-    
-    navigator.clipboard.writeText(roomUrl).then(function() {
-        alert('Ссылка на комнату скопирована. Отправьте её собеседнику.\n\nОставайтесь на этой странице и ждите подключения.');
-    }).catch(function() {
-        prompt('Ссылка на комнату (скопируйте и отправьте собеседнику):', roomUrl);
-    });
-    
-    document.getElementById('connectionStatus').textContent = 'Ожидание...';
 }
 
 function switchToChatMode(peerId) {
@@ -428,7 +417,3 @@ function resetConnection() {
         connectionStatus.textContent = 'Не подключен';
     }
 }
-
-window.onload = function() {
-    // Уже инициализировано выше
-};
