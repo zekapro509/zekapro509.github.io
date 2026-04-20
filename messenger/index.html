@@ -27,7 +27,7 @@
                     <div style="margin-top: 20px;">
                         <label style="display: block; margin-bottom: 8px; font-weight: 500;">ID собеседника:</label>
                         <div class="input-group">
-                            <input type="text" id="remotePeerId" placeholder="Вставьте ID...">
+                            <input type="text" id="remotePeerId" placeholder="Вставьте ID..." autocomplete="off" spellcheck="false">
                             <button class="small-btn" onclick="connectToPeer()">Подключиться</button>
                         </div>
                     </div>
@@ -55,7 +55,7 @@
                         <div class="empty-chat">Сообщений пока нет</div>
                     </div>
                     <div class="message-input-area">
-                        <input type="text" id="messageInput" placeholder="Введите сообщение..." onkeypress="handleKeyPress(event)">
+                        <input type="text" id="messageInput" placeholder="Введите сообщение..." onkeypress="handleKeyPress(event)" autocomplete="off" spellcheck="false">
                         <button class="small-btn" onclick="sendMessage()">Отправить</button>
                     </div>
                     <div class="encryption-info" style="margin-top: 15px; display: flex;">

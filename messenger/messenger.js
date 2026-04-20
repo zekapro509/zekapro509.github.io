@@ -235,10 +235,14 @@ function setupConnection() {
     });
 
     conn.on('close', function() {
+        // Собеседник вышел — возвращаемся на главную
         if (document.getElementById('chatPage').style.display === 'block') {
-            document.getElementById('chatStatus').textContent = 'Соединение разорвано';
+            alert('Собеседник отключился.');
         }
         resetConnection();
+        
+        // Возвращаемся на главную
+        window.location.hash = '';
     });
 }
 
