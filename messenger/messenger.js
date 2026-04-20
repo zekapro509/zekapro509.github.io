@@ -13,7 +13,13 @@ function initPeer() {
         host: '0.peerjs.com',
         port: 443,
         secure: true,
-        debug: 0
+        debug: 0,
+        config: {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+        }
     });
 
     peer.on('open', function(id) {
@@ -45,7 +51,21 @@ function initPeer() {
         console.error('Peer error:', err);
         if (err.type === 'peer-unavailable') {
             alert('Собеседник не найден. Проверьте ID.');
+        } else if (err.type === 'server-error') {
+            document.getElementById('myPeerId').textContent = 'Ошибка подключения к серверу. Обновите страницу.';
+        } else if (err.type === 'network') {
+            document.getElementById('myPeerId').textContent = 'Ошибка сети. Проверьте интернет.';
+        } else {
+            document.getElementById('myPeerId').textContent = 'Ошибка: ' + err.type;
         }
+    });
+
+    peer.on('disconnected', function() {
+        setTimeout(function() {
+            if (peer && !peer.destroyed) {
+                peer.reconnect();
+            }
+        }, 3000);
     });
 }
 
@@ -197,6 +217,11 @@ function handleKeyPress(event) {
 function copyMyId() {
     if (!myPeerId) {
         alert('ID ещё не сгенерирован. Подождите секунду.');
+        return;
+    }
+    
+    if (myPeerId.startsWith('Ошибка')) {
+        alert('Не удалось получить ID. Обновите страницу.');
         return;
     }
     
