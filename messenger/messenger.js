@@ -10,14 +10,18 @@ function initPeer() {
     const randomId = 'tlc_' + Math.random().toString(36).substring(2, 12);
     
     peer = new Peer(randomId, {
-        host: '0.peerjs.com',
+        host: 'peerjs-server.onrender.com',
         port: 443,
         secure: true,
         debug: 0,
+        path: '/',
         config: {
             iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' }
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' },
+                { urls: 'stun:stun3.l.google.com:19302' },
+                { urls: 'stun:stun4.l.google.com:19302' }
             ]
         }
     });
@@ -52,7 +56,7 @@ function initPeer() {
         if (err.type === 'peer-unavailable') {
             alert('Собеседник не найден. Проверьте ID.');
         } else if (err.type === 'server-error') {
-            document.getElementById('myPeerId').textContent = 'Ошибка подключения к серверу. Обновите страницу.';
+            document.getElementById('myPeerId').textContent = 'Ошибка сервера. Попробуйте обновить страницу.';
         } else if (err.type === 'network') {
             document.getElementById('myPeerId').textContent = 'Ошибка сети. Проверьте интернет.';
         } else {
@@ -61,11 +65,12 @@ function initPeer() {
     });
 
     peer.on('disconnected', function() {
+        document.getElementById('myPeerId').textContent = 'Переподключение...';
         setTimeout(function() {
             if (peer && !peer.destroyed) {
                 peer.reconnect();
             }
-        }, 3000);
+        }, 2000);
     });
 }
 
