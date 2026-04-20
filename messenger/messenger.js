@@ -55,8 +55,11 @@ function initPeer() {
         }
         
         conn = connection;
-        isInitiator = false;
+        isInitiator = false;  // Создатель комнаты НЕ инициатор
         setupConnection();
+        
+        // Ждём ключ от инициатора
+        isConnected = true;
         
         if (document.getElementById('homePage').style.display !== 'none') {
             switchToChatMode(conn.peer);
@@ -116,6 +119,8 @@ function initPeerAndJoinRoom(roomId) {
     });
 
     peer.on('connection', function(connection) {
+        // Этот обработчик не должен срабатывать для присоединяющегося,
+        // но оставим для надёжности
         if (isConnected) {
             connection.close();
             return;
@@ -145,12 +150,15 @@ function connectToRoom(roomId) {
         reliable: true
     });
 
+    // Тот, кто переходит по ссылке — ИНИЦИАТОР
     isInitiator = true;
 
     conn.on('open', function() {
         setupConnection();
         document.getElementById('chatStatus').textContent = 'Подключен';
         isConnected = true;
+        
+        // Инициатор генерирует ключ и отправляет создателю
         generateAndSendKey();
     });
 
@@ -168,14 +176,12 @@ function createRoom() {
     
     const roomUrl = window.location.href.split('#')[0] + '#' + myPeerId;
     
-    // Копируем ссылку
     navigator.clipboard.writeText(roomUrl).then(function() {
         alert('Ссылка на комнату скопирована. Отправьте её собеседнику.\n\nОставайтесь на этой странице и ждите подключения.');
     }).catch(function() {
         prompt('Ссылка на комнату (скопируйте и отправьте собеседнику):', roomUrl);
     });
     
-    // Ждём входящего подключения
     document.getElementById('connectionStatus').textContent = 'Ожидание...';
 }
 
@@ -184,8 +190,8 @@ function switchToChatMode(peerId) {
     document.getElementById('chatPage').style.display = 'block';
     document.getElementById('backBtn').style.display = 'none';
     document.getElementById('chatPeerId').textContent = peerId.substring(0, 12) + '...';
+    document.getElementById('encryptionInfo').style.display = 'flex';
     
-    // Обновляем URL без перезагрузки
     window.location.hash = myPeerId;
 }
 
@@ -219,12 +225,8 @@ function generateAndSendKey() {
 
 function receiveKey(key) {
     encryptionKey = key;
-    if (!isInitiator) {
-        conn.send({
-            type: 'key',
-            key: encryptionKey
-        });
-    }
+    // Создатель комнаты (не инициатор) просто сохраняет ключ
+    // Отправлять обратно не нужно
 }
 
 function encryptMessage(text) {
@@ -305,6 +307,8 @@ function sendMessage() {
 function addMessage(data, direction) {
     const messagesBox = document.getElementById('messagesBox');
     
+    if (!messagesBox) return;
+    
     const emptyChat = messagesBox.querySelector('.empty-chat');
     if (emptyChat) {
         emptyChat.remove();
@@ -363,7 +367,6 @@ function disconnectAndGoHome() {
     }
     resetConnection();
     
-    // Очищаем хэш и возвращаемся на главную
     window.location.hash = '';
     window.location.reload();
 }
