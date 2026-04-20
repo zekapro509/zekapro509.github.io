@@ -167,13 +167,11 @@ function initPeerAndJoinRoom(roomId) {
         conn = connection;
         isInitiator = false;
         setupConnection();
-        document.getElementById('chatStatus').textContent = 'Подключен';
         isConnected = true;
     });
 
     peer.on('error', function(err) {
         console.error('Peer error:', err);
-        document.getElementById('chatStatus').textContent = 'Ошибка подключения';
         if (err.type === 'peer-unavailable') {
             showChatError('Комната не найдена');
         }
@@ -181,21 +179,18 @@ function initPeerAndJoinRoom(roomId) {
 }
 
 function connectToRoom(roomId) {
-    document.getElementById('chatPeerId').textContent = roomId.substring(0, 12) + '...';
-    document.getElementById('chatStatus').textContent = 'Подключение...';
-    
+    document.getElementById('chatPeerId').textContent = roomId;
     conn = peer.connect(roomId, { reliable: true });
     isInitiator = true;
 
     conn.on('open', function() {
         setupConnection();
-        document.getElementById('chatStatus').textContent = 'Подключен';
         isConnected = true;
         generateAndSendKey();
     });
 
     conn.on('error', function() {
-        document.getElementById('chatStatus').textContent = 'Не удалось подключиться';
+        showChatError('Не удалось подключиться');
     });
 }
 
@@ -203,7 +198,7 @@ function switchToChatMode(peerId) {
     document.getElementById('homePage').style.display = 'none';
     document.getElementById('chatPage').style.display = 'block';
     document.getElementById('backBtn').style.display = 'none';
-    document.getElementById('chatPeerId').textContent = peerId.substring(0, 12) + '...';
+    document.getElementById('chatPeerId').textContent = peerId;
     document.getElementById('encryptionInfo').style.display = 'flex';
     
     currentRoomId = myPeerId;

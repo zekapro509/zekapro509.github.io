@@ -32,6 +32,8 @@
                         </div>
                     </div>
                     
+                    <div id="errorMessage" style="color: #cc0000; font-size: 14px; margin-top: 10px; text-align: center;"></div>
+                    
                     <div class="encryption-info" id="encryptionInfo" style="display: none;">
                         <span class="encryption-badge">AES-256</span>
                         <span style="font-size: 13px; color: #666;">Сообщения шифруются</span>
@@ -47,8 +49,7 @@
 
             <div class="messenger-container">
                 <div class="chat-area">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <span style="font-weight: 500;">Статус: <span id="chatStatus">Подключен</span></span>
+                    <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
                         <button class="small-btn" onclick="disconnectAndGoHome()" style="padding: 8px 16px;">Выйти</button>
                     </div>
                     <div class="messages-box" id="messagesBox">
@@ -57,9 +58,8 @@
                     <div class="message-input-area">
                         <input type="text" id="messageInput" placeholder="Введите сообщение..." onkeypress="handleKeyPress(event)" autocomplete="off" spellcheck="false">
                         <button class="small-btn" onclick="sendMessage()">Отправить</button>
-                        <button class="small-btn" id="voiceBtn" onmousedown="startRecording()" onmouseup="stopRecording()" ontouchstart="startRecording()" ontouchend="stopRecording()" style="padding: 12px 16px;">🎤</button>
                     </div>
-                    <div id="recordingStatus" style="display: none; text-align: center; margin-top: 10px; color: #666;">Запись...</div>
+                    <div id="chatErrorMessage" style="color: #cc0000; font-size: 14px; margin-top: 10px; text-align: center;"></div>
                     <div class="encryption-info" style="margin-top: 15px; display: flex;">
                         <span class="encryption-badge">AES-256</span>
                         <span style="font-size: 13px; color: #666;">Сообщения шифруются</span>
