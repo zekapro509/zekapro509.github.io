@@ -6,19 +6,22 @@ let encryptionKey = null;
 let isInitiator = false;
 let currentRoomId = null;
 
-// Слушаем изменения хэша (нажатие Назад/Вперёд в браузере)
+// Для записи голоса
+let mediaRecorder;
+let audioChunks = [];
+let isRecording = false;
+
+// Слушаем изменения хэша
 window.addEventListener('hashchange', function() {
     const newHash = window.location.hash.substring(1);
     
     if (!newHash) {
-        // Хэш исчез — возвращаемся на главную
         if (conn) {
             conn.close();
         }
         resetConnection();
         showHomePage();
     } else if (newHash !== currentRoomId) {
-        // Хэш изменился на другую комнату
         if (conn) {
             conn.close();
         }
@@ -28,7 +31,6 @@ window.addEventListener('hashchange', function() {
     }
 });
 
-// Определяем начальный режим
 const hash = window.location.hash.substring(1);
 if (hash) {
     document.getElementById('homePage').style.display = 'none';
@@ -45,17 +47,14 @@ function showHomePage() {
     document.getElementById('chatPage').style.display = 'none';
     document.getElementById('backBtn').style.display = 'block';
     
-    // Очищаем хэш без перезагрузки
     if (window.location.hash) {
         history.replaceState(null, '', window.location.pathname);
     }
     
-    // Очищаем поля ввода
     document.getElementById('remotePeerId').value = '';
     document.getElementById('connectionStatus').className = 'status-badge status-disconnected';
     document.getElementById('connectionStatus').textContent = 'Не подключен';
     
-    // Пересоздаём Peer если нужно — это сгенерирует новый ID
     if (peer && !peer.destroyed) {
         peer.destroy();
     }
@@ -67,7 +66,6 @@ function joinRoomFromHash(roomId) {
     document.getElementById('chatPage').style.display = 'block';
     document.getElementById('backBtn').style.display = 'none';
     
-    // Закрываем старое соединение если есть
     if (peer && !peer.destroyed) {
         peer.destroy();
     }
@@ -231,17 +229,17 @@ function setupConnection() {
         } else if (data.type === 'message') {
             const decryptedText = decryptMessage(data.text);
             addMessage({ text: decryptedText, time: data.time }, 'in');
+        } else if (data.type === 'voice') {
+            const decryptedAudio = decryptMessage(data.audio);
+            addVoiceMessage(decryptedAudio, data.time, 'in');
         }
     });
 
     conn.on('close', function() {
-        // Собеседник вышел — возвращаемся на главную
         if (document.getElementById('chatPage').style.display === 'block') {
             alert('Собеседник отключился.');
         }
         resetConnection();
-        
-        // Возвращаемся на главную
         window.location.hash = '';
     });
 }
@@ -337,13 +335,10 @@ function sendMessage() {
 
 function addMessage(data, direction) {
     const messagesBox = document.getElementById('messagesBox');
-    
     if (!messagesBox) return;
     
     const emptyChat = messagesBox.querySelector('.empty-chat');
-    if (emptyChat) {
-        emptyChat.remove();
-    }
+    if (emptyChat) emptyChat.remove();
 
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message ' + (direction === 'in' ? 'message-in' : 'message-out');
@@ -354,6 +349,97 @@ function addMessage(data, direction) {
     
     messagesBox.appendChild(messageDiv);
     messagesBox.scrollTop = messagesBox.scrollHeight;
+}
+
+function addVoiceMessage(audioBase64, time, direction) {
+    const messagesBox = document.getElementById('messagesBox');
+    if (!messagesBox) return;
+    
+    const emptyChat = messagesBox.querySelector('.empty-chat');
+    if (emptyChat) emptyChat.remove();
+
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message ' + (direction === 'in' ? 'message-in' : 'message-out');
+    
+    const audioId = 'audio_' + Date.now() + Math.random();
+    messageDiv.innerHTML = `
+        <div class="voice-message">
+            <button class="voice-play-btn" onclick="playAudio('${audioId}')">▶</button>
+            <span>Голосовое сообщение</span>
+        </div>
+        <audio id="${audioId}" src="${audioBase64}" style="display: none;"></audio>
+        <div class="message-time">${time || ''}</div>
+    `;
+    
+    messagesBox.appendChild(messageDiv);
+    messagesBox.scrollTop = messagesBox.scrollHeight;
+}
+
+function playAudio(audioId) {
+    const audio = document.getElementById(audioId);
+    if (audio) {
+        audio.play();
+    }
+}
+
+async function startRecording() {
+    if (!conn || !isConnected) {
+        alert('Нет подключения');
+        return;
+    }
+    
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        
+        mediaRecorder.ondataavailable = function(event) {
+            audioChunks.push(event.data);
+        };
+        
+        mediaRecorder.onstop = function() {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const reader = new FileReader();
+            reader.onload = function() {
+                const base64Audio = reader.result;
+                sendVoiceMessage(base64Audio);
+            };
+            reader.readAsDataURL(audioBlob);
+            
+            stream.getTracks().forEach(track => track.stop());
+        };
+        
+        mediaRecorder.start();
+        isRecording = true;
+        document.getElementById('recordingStatus').style.display = 'block';
+        document.getElementById('voiceBtn').textContent = '⬤';
+    } catch (e) {
+        alert('Нет доступа к микрофону');
+    }
+}
+
+function stopRecording() {
+    if (mediaRecorder && isRecording) {
+        mediaRecorder.stop();
+        isRecording = false;
+        document.getElementById('recordingStatus').style.display = 'none';
+        document.getElementById('voiceBtn').textContent = '🎤';
+    }
+}
+
+function sendVoiceMessage(audioBase64) {
+    if (!conn || !isConnected || !encryptionKey) return;
+    
+    const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    const encryptedAudio = encryptMessage(audioBase64);
+    
+    conn.send({
+        type: 'voice',
+        audio: encryptedAudio,
+        time: time
+    });
+    
+    addVoiceMessage(audioBase64, time, 'out');
 }
 
 function escapeHtml(text) {
@@ -369,43 +455,27 @@ function handleKeyPress(event) {
 }
 
 function copyMyId() {
-    if (!myPeerId) {
-        alert('ID ещё не сгенерирован. Подождите секунду.');
-        return;
-    }
+    if (!myPeerId) return;
+    if (myPeerId.startsWith('Ошибка')) return;
     
-    if (myPeerId.startsWith('Ошибка')) {
-        alert('Не удалось получить ID. Обновите страницу.');
-        return;
-    }
-    
-    navigator.clipboard.writeText(myPeerId).then(function() {
-        alert('ID скопирован в буфер обмена.');
-    }).catch(function() {
+    navigator.clipboard.writeText(myPeerId).catch(function() {
         const input = document.createElement('input');
         input.value = myPeerId;
         document.body.appendChild(input);
         input.select();
         document.execCommand('copy');
         document.body.removeChild(input);
-        alert('ID скопирован в буфер обмена.');
     });
 }
 
 function disconnectAndGoHome() {
-    if (conn) {
-        conn.close();
-    }
+    if (conn) conn.close();
     resetConnection();
-    
-    // Очищаем хэш — это вызовет hashchange и showHomePage
     window.location.hash = '';
 }
 
 function disconnect() {
-    if (conn) {
-        conn.close();
-    }
+    if (conn) conn.close();
     resetConnection();
 }
 
