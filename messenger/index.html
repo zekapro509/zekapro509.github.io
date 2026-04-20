@@ -1,1 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TLC zekapro509 · Мессенджер</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="messenger.css">
+</head>
+<body>
+    <h1>TLC Messenger</h1>
+    <p>Приватный P2P мессенджер · сообщения только между браузерами</p>
 
+    <div class="messenger-container">
+        <div class="connection-panel">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-weight: 700;">Ваш ID:</span>
+                <span class="status-badge status-disconnected" id="connectionStatus">Не подключен</span>
+            </div>
+            <div class="peer-id-display" id="myPeerId">Генерация ID...</div>
+            <button class="small-btn" onclick="copyMyId()" style="width: 100%;">Скопировать мой ID</button>
+            
+            <div style="margin-top: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">ID собеседника:</label>
+                <div class="input-group">
+                    <input type="text" id="remotePeerId" placeholder="Вставьте ID...">
+                    <button class="small-btn" onclick="connectToPeer()">Подключиться</button>
+                </div>
+            </div>
+            <div class="encryption-info" id="encryptionInfo" style="display: none;">
+                <span class="encryption-badge">AES-256</span>
+                <span style="font-size: 13px; color: #666;">Сообщения шифруются</span>
+            </div>
+        </div>
+
+        <div class="chat-area" id="chatArea" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-weight: 500;">Чат с <span id="connectedPeerId"></span></span>
+                <button class="small-btn" onclick="disconnect()" style="padding: 8px 16px;">Отключиться</button>
+            </div>
+            <div class="messages-box" id="messagesBox">
+                <div class="empty-chat">Сообщений пока нет</div>
+            </div>
+            <div class="message-input-area">
+                <input type="text" id="messageInput" placeholder="Введите сообщение..." onkeypress="handleKeyPress(event)">
+                <button class="small-btn" onclick="sendMessage()">Отправить</button>
+            </div>
+        </div>
+    </div>
+
+    <a href="../" class="back-btn">←</a>
+
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    <script src="messenger.js"></script>
+</body>
+</html>
