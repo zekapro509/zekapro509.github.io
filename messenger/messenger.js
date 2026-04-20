@@ -6,20 +6,67 @@ let encryptionKey = null;
 let isInitiator = false;
 let currentRoomId = null;
 
-// Определяем режим: главная или чат
+// Слушаем изменения хэша (нажатие Назад/Вперёд в браузере)
+window.addEventListener('hashchange', function() {
+    const newHash = window.location.hash.substring(1);
+    
+    if (!newHash) {
+        // Хэш исчез — возвращаемся на главную
+        if (conn) {
+            conn.close();
+        }
+        resetConnection();
+        showHomePage();
+    } else if (newHash !== currentRoomId) {
+        // Хэш изменился на другую комнату
+        if (conn) {
+            conn.close();
+        }
+        resetConnection();
+        currentRoomId = newHash;
+        joinRoomFromHash(newHash);
+    }
+});
+
+// Определяем начальный режим
 const hash = window.location.hash.substring(1);
 if (hash) {
-    // Режим чата — подключаемся к комнате
     document.getElementById('homePage').style.display = 'none';
     document.getElementById('chatPage').style.display = 'block';
     document.getElementById('backBtn').style.display = 'none';
     currentRoomId = hash;
     initPeerAndJoinRoom(hash);
 } else {
-    // Главная страница
+    showHomePage();
+}
+
+function showHomePage() {
     document.getElementById('homePage').style.display = 'block';
     document.getElementById('chatPage').style.display = 'none';
-    initPeer();
+    document.getElementById('backBtn').style.display = 'block';
+    
+    // Очищаем хэш без перезагрузки
+    if (window.location.hash) {
+        history.replaceState(null, '', window.location.pathname);
+    }
+    
+    // Пересоздаём Peer если нужно
+    if (!peer || peer.destroyed) {
+        initPeer();
+    }
+}
+
+function joinRoomFromHash(roomId) {
+    document.getElementById('homePage').style.display = 'none';
+    document.getElementById('chatPage').style.display = 'block';
+    document.getElementById('backBtn').style.display = 'none';
+    
+    // Закрываем старое соединение если есть
+    if (peer && !peer.destroyed) {
+        peer.destroy();
+    }
+    
+    initPeerAndJoinRoom(roomId);
 }
 
 function initPeer() {
@@ -55,10 +102,8 @@ function initPeer() {
         }
         
         conn = connection;
-        isInitiator = false;  // Создатель комнаты НЕ инициатор
+        isInitiator = false;
         setupConnection();
-        
-        // Ждём ключ от инициатора
         isConnected = true;
         
         if (document.getElementById('homePage').style.display !== 'none') {
@@ -114,13 +159,10 @@ function initPeerAndJoinRoom(roomId) {
     });
 
     peer.on('open', function() {
-        // Подключаемся к создателю комнаты
         connectToRoom(roomId);
     });
 
     peer.on('connection', function(connection) {
-        // Этот обработчик не должен срабатывать для присоединяющегося,
-        // но оставим для надёжности
         if (isConnected) {
             connection.close();
             return;
@@ -150,15 +192,12 @@ function connectToRoom(roomId) {
         reliable: true
     });
 
-    // Тот, кто переходит по ссылке — ИНИЦИАТОР
     isInitiator = true;
 
     conn.on('open', function() {
         setupConnection();
         document.getElementById('chatStatus').textContent = 'Подключен';
         isConnected = true;
-        
-        // Инициатор генерирует ключ и отправляет создателю
         generateAndSendKey();
     });
 
@@ -192,6 +231,7 @@ function switchToChatMode(peerId) {
     document.getElementById('chatPeerId').textContent = peerId.substring(0, 12) + '...';
     document.getElementById('encryptionInfo').style.display = 'flex';
     
+    currentRoomId = myPeerId;
     window.location.hash = myPeerId;
 }
 
@@ -225,8 +265,6 @@ function generateAndSendKey() {
 
 function receiveKey(key) {
     encryptionKey = key;
-    // Создатель комнаты (не инициатор) просто сохраняет ключ
-    // Отправлять обратно не нужно
 }
 
 function encryptMessage(text) {
@@ -367,8 +405,8 @@ function disconnectAndGoHome() {
     }
     resetConnection();
     
+    // Очищаем хэш — это вызовет hashchange и showHomePage
     window.location.hash = '';
-    window.location.reload();
 }
 
 function disconnect() {
