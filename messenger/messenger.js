@@ -71,7 +71,7 @@ function joinRoomFromHash(roomId) {
 
 function generateNumericId() {
     const num = Math.floor(Math.random() * 10000);
-    return num.toString().padStart(4, '0');
+    return 't' + num.toString().padStart(4, '0');
 }
 
 function initPeer() {
