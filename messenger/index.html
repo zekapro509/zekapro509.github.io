@@ -33,11 +33,6 @@
                     </div>
                     
                     <div id="errorMessage" style="color: #cc0000; font-size: 14px; margin-top: 10px; text-align: center;"></div>
-                    
-                    <div class="encryption-info" id="encryptionInfo" style="display: none;">
-                        <span class="encryption-badge">AES-256</span>
-                        <span style="font-size: 13px; color: #666;">Сообщения шифруются</span>
-                    </div>
                 </div>
             </div>
         </div>
@@ -60,16 +55,12 @@
                         <button class="small-btn" onclick="sendMessage()">Отправить</button>
                     </div>
                     <div id="chatErrorMessage" style="color: #cc0000; font-size: 14px; margin-top: 10px; text-align: center;"></div>
-                    <div class="encryption-info" style="margin-top: 15px; display: flex;">
-                        <span class="encryption-badge">AES-256</span>
-                        <span style="font-size: 13px; color: #666;">Сообщения шифруются</span>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <a href="../" class="back-btn" id="backBtn">←</a>
+    <a href="../" class="back-btn">←</a>
 
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>

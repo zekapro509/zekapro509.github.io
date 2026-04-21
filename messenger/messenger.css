@@ -82,27 +82,6 @@
     color: #ffffff;
 }
 
-.encryption-info {
-    margin-top: 15px;
-    padding: 10px;
-    background-color: #ffffff;
-    border-radius: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    border: 1px solid #e0e0e0;
-}
-
-.encryption-badge {
-    background-color: #000000;
-    color: #ffffff;
-    padding: 4px 12px;
-    border-radius: 40px;
-    font-size: 12px;
-    font-weight: 700;
-}
-
 .chat-area {
     background-color: #f5f5f5;
     border-radius: 20px;
@@ -172,6 +151,35 @@
     font-style: italic;
 }
 
+/* Кнопка назад — фиксированная */
+.back-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: #000000;
+    color: #ffffff;
+    border: 2px solid #000000;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-family: 'Google Sans', Arial, sans-serif;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.back-btn:hover {
+    background-color: #ffffff;
+    color: #000000;
+}
+
 @media (max-width: 768px) {
     .input-group {
         flex-direction: column;
@@ -187,5 +195,13 @@
     
     .small-btn {
         white-space: normal;
+    }
+    
+    .back-btn {
+        top: 15px;
+        left: 15px;
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
     }
 }

@@ -6,7 +6,6 @@ let encryptionKey = null;
 let isInitiator = false;
 let currentRoomId = null;
 
-// Показ ошибок в интерфейсе вместо alert
 function showError(message) {
     const errorEl = document.getElementById('errorMessage');
     if (errorEl) {
@@ -23,7 +22,6 @@ function showChatError(message) {
     }
 }
 
-// Слушаем изменения хэша
 window.addEventListener('hashchange', function() {
     const newHash = window.location.hash.substring(1);
     
@@ -43,7 +41,6 @@ const hash = window.location.hash.substring(1);
 if (hash) {
     document.getElementById('homePage').style.display = 'none';
     document.getElementById('chatPage').style.display = 'block';
-    document.getElementById('backBtn').style.display = 'none';
     currentRoomId = hash;
     initPeerAndJoinRoom(hash);
 } else {
@@ -53,7 +50,6 @@ if (hash) {
 function showHomePage() {
     document.getElementById('homePage').style.display = 'block';
     document.getElementById('chatPage').style.display = 'none';
-    document.getElementById('backBtn').style.display = 'block';
     
     if (window.location.hash) {
         history.replaceState(null, '', window.location.pathname);
@@ -70,7 +66,6 @@ function showHomePage() {
 function joinRoomFromHash(roomId) {
     document.getElementById('homePage').style.display = 'none';
     document.getElementById('chatPage').style.display = 'block';
-    document.getElementById('backBtn').style.display = 'none';
     
     if (peer && !peer.destroyed) peer.destroy();
     initPeerAndJoinRoom(roomId);
@@ -197,9 +192,7 @@ function connectToRoom(roomId) {
 function switchToChatMode(peerId) {
     document.getElementById('homePage').style.display = 'none';
     document.getElementById('chatPage').style.display = 'block';
-    document.getElementById('backBtn').style.display = 'none';
     document.getElementById('chatPeerId').textContent = peerId;
-    document.getElementById('encryptionInfo').style.display = 'flex';
     
     currentRoomId = myPeerId;
     window.location.hash = myPeerId;
@@ -270,7 +263,6 @@ function connectToPeer() {
     conn.on('open', function() {
         setupConnection();
         switchToChatMode(remoteId);
-        document.getElementById('encryptionInfo').style.display = 'flex';
         isConnected = true;
         generateAndSendKey();
     });
