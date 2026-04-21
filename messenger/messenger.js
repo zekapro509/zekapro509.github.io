@@ -71,14 +71,14 @@ function joinRoomFromHash(roomId) {
 
 function generateNumericId() {
     const num = Math.floor(Math.random() * 10000);
-    return num.toString().padStart(4, '0');
+    return 't' + num.toString().padStart(4, '0');
 }
 
 function initPeer() {
     const randomId = generateNumericId();
     
     peer = new Peer(randomId, {
-        host: '0.peerjs.com',
+        host: 'peerjs-server.onrender.com',
         port: 443,
         secure: true,
         debug: 0,
@@ -86,7 +86,8 @@ function initPeer() {
         config: {
             iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' }
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' }
             ]
         }
     });
@@ -121,7 +122,6 @@ function initPeer() {
                 showError('Собеседник не найден');
             } else if (err.type === 'server-error') {
                 idElement.textContent = 'Ошибка сервера';
-                setTimeout(() => { initPeer(); }, 1000);
             } else if (err.type === 'network') {
                 idElement.textContent = 'Ошибка сети';
             } else {
@@ -141,7 +141,7 @@ function initPeerAndJoinRoom(roomId) {
     const randomId = generateNumericId();
     
     peer = new Peer(randomId, {
-        host: '0.peerjs.com',
+        host: 'peerjs-server.onrender.com',
         port: 443,
         secure: true,
         debug: 0,
@@ -149,7 +149,8 @@ function initPeerAndJoinRoom(roomId) {
         config: {
             iceServers: [
                 { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' }
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' }
             ]
         }
     });
