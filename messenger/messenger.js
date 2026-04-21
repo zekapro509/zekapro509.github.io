@@ -56,8 +56,6 @@ function showHomePage() {
     }
     
     document.getElementById('remotePeerId').value = '';
-    document.getElementById('connectionStatus').className = 'status-badge status-disconnected';
-    document.getElementById('connectionStatus').textContent = 'Не подключен';
     
     if (peer && !peer.destroyed) peer.destroy();
     initPeer();
@@ -71,8 +69,13 @@ function joinRoomFromHash(roomId) {
     initPeerAndJoinRoom(roomId);
 }
 
+function generateNumericId() {
+    const num = Math.floor(Math.random() * 10000);
+    return num.toString().padStart(4, '0');
+}
+
 function initPeer() {
-    const randomId = 'tlc_' + Math.random().toString(36).substring(2, 12);
+    const randomId = generateNumericId();
     
     peer = new Peer(randomId, {
         host: 'peerjs-server.onrender.com',
@@ -135,7 +138,7 @@ function initPeer() {
 }
 
 function initPeerAndJoinRoom(roomId) {
-    const randomId = 'tlc_' + Math.random().toString(36).substring(2, 12);
+    const randomId = generateNumericId();
     
     peer = new Peer(randomId, {
         host: 'peerjs-server.onrender.com',
@@ -347,10 +350,4 @@ function resetConnection() {
     conn = null;
     encryptionKey = null;
     isInitiator = false;
-    
-    const connectionStatus = document.getElementById('connectionStatus');
-    if (connectionStatus) {
-        connectionStatus.className = 'status-badge status-disconnected';
-        connectionStatus.textContent = 'Не подключен';
-    }
 }
