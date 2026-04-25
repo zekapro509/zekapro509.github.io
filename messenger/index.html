@@ -10,23 +10,22 @@
 </head>
 <body>
     <div id="app">
-        <!-- Главная страница с подключением -->
         <div id="homePage">
             <h1>TLC Messenger</h1>
-            <p>Приватный P2P мессенджер · сообщения только между браузерами</p>
+            <p>Приватный P2P мессенджер · end-to-end шифрование</p>
 
             <div class="messenger-container">
                 <div class="connection-panel">
                     <div style="margin-bottom: 8px;">
-                        <span style="font-weight: 700;">Ваш ID:</span>
+                        <span style="font-weight: 700;">Ваша ссылка:</span>
                     </div>
-                    <div class="peer-id-display" id="myPeerId">Генерация ID...</div>
-                    <button class="small-btn" onclick="copyMyId()" style="width: 100%;">Скопировать мой ID</button>
+                    <div class="peer-id-display" id="myPeerId">Генерация...</div>
+                    <button class="small-btn" onclick="copyMyId()" style="width: 100%;">Скопировать ссылку</button>
                     
                     <div style="margin-top: 20px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 500;">ID собеседника:</label>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500;">Ссылка собеседника:</label>
                         <div class="input-group">
-                            <input type="text" id="remotePeerId" placeholder="Вставьте ID..." autocomplete="off" spellcheck="false">
+                            <input type="text" id="remotePeerId" placeholder="Вставьте ссылку или ID..." autocomplete="off" spellcheck="false">
                             <button class="small-btn" onclick="connectToPeer()">Подключиться</button>
                         </div>
                     </div>
@@ -36,7 +35,6 @@
             </div>
         </div>
 
-        <!-- Страница чата -->
         <div id="chatPage" style="display: none;">
             <h1>TLC Messenger</h1>
             <p>Чат с <span id="chatPeerId"></span></p>
@@ -62,7 +60,6 @@
     <a href="../" class="back-btn">←</a>
 
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
     <script src="messenger.js"></script>
 </body>
 </html>
