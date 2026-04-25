@@ -57,17 +57,16 @@
         </div>
     </div>
 
-    <a href="./" class="back-btn" onclick="goBack(event)">←</a>
+    <a href="#" class="back-btn" onclick="goBack(event)">←</a>
 
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <script src="messenger.js"></script>
-    
     <script>
         function goBack(event) {
             event.preventDefault();
-            // Всегда ведем на главную мессенджера без хеша
-            window.location.href = './';
+            disconnectAndGoHome();
         }
     </script>
+
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="messenger.js"></script>
 </body>
 </html>

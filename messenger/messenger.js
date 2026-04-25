@@ -5,6 +5,7 @@ let isConnected = false;
 let sharedSecret = null;
 let isInitiator = false;
 let heartbeatInterval = null;
+let isGoingHome = false;
 
 function showError(message) {
     const errorEl = document.getElementById('errorMessage');
@@ -29,10 +30,14 @@ function extractPeerId(input) {
 function handleHashChange() {
     const hash = window.location.hash.substring(1);
     
+    if (isGoingHome) {
+        isGoingHome = false;
+        return;
+    }
+    
     if (!hash) {
         cleanupConnection();
         showHomePage();
-        // Редирект на страницу с хешем
         initPeerAndRedirect();
     } else if (hash !== myPeerId) {
         cleanupConnection();
@@ -95,7 +100,8 @@ function initPeerAndRedirect() {
         const idElement = document.getElementById('myPeerId');
         if (idElement) idElement.textContent = id;
         
-        // Добавляем хеш в URL
+        // Добавляем хеш в URL с флагом
+        isGoingHome = false;
         window.location.hash = id;
     });
 
@@ -301,7 +307,8 @@ function setupConnection() {
         if (document.getElementById('chatPage').style.display === 'block') {
             showChatError('Собеседник отключился');
             setTimeout(() => { 
-                window.location.hash = '';
+                isGoingHome = true;
+                disconnectAndGoHome();
             }, 500);
         }
     });
@@ -497,6 +504,7 @@ function copyMyId() {
 
 function disconnectAndGoHome() {
     cleanupConnection();
+    isGoingHome = true;
     window.location.hash = '';
 }
 
