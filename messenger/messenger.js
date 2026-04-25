@@ -113,6 +113,11 @@ function initPeer(roomId = null) {
         isInitiator = false;
         setupConnection();
         startHeartbeat();
+        
+        // Автоматически переключаем в чат, если кто-то подключился к нам
+        if (document.getElementById('homePage').style.display !== 'none') {
+            switchToChatMode(conn.peer);
+        }
     });
 
     peer.on('error', (err) => {
@@ -415,8 +420,6 @@ function handleKeyPress(event) {
 
 function copyMyId() {
     if (!myPeerId || myPeerId.includes('Ошибка')) return;
-    
-    const shareUrl = `https://zekapro509.github.io/messenger/#${myPeerId}`;
     
     navigator.clipboard.writeText(myPeerId).then(() => {
         showError('ID скопирован!');
