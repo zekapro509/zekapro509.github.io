@@ -21,7 +21,6 @@ function showChatError(message) {
 }
 
 function extractPeerId(input) {
-    // Извлекает ID из ссылки или возвращает как есть
     const match = input.match(/#(t\w+)$/);
     return match ? match[1] : input.trim();
 }
@@ -33,6 +32,8 @@ function handleHashChange() {
     if (!hash) {
         cleanupConnection();
         showHomePage();
+        // Редирект на страницу с хешем
+        initPeerAndRedirect();
     } else if (hash !== myPeerId) {
         cleanupConnection();
         joinRoom(hash);
@@ -47,18 +48,13 @@ if (hash) {
     joinRoom(hash);
 } else {
     showHomePage();
+    initPeerAndRedirect();
 }
 
 function showHomePage() {
     document.getElementById('homePage').style.display = 'block';
     document.getElementById('chatPage').style.display = 'none';
     document.getElementById('remotePeerId').value = '';
-    
-    if (window.location.hash) {
-        history.replaceState(null, '', window.location.pathname);
-    }
-    
-    initPeer();
 }
 
 function joinRoom(roomId) {
@@ -73,6 +69,76 @@ function joinRoom(roomId) {
 function generateNumericId() {
     const num = Math.floor(Math.random() * 10000);
     return 't' + num.toString().padStart(4, '0');
+}
+
+function initPeerAndRedirect() {
+    const peerId = generateNumericId();
+    
+    const peerConfig = {
+        host: 'peerjs-server.onrender.com',
+        port: 443,
+        secure: true,
+        debug: 0,
+        path: '/',
+        config: {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+        }
+    };
+
+    peer = new Peer(peerId, peerConfig);
+
+    peer.on('open', (id) => {
+        myPeerId = id;
+        const idElement = document.getElementById('myPeerId');
+        if (idElement) idElement.textContent = id;
+        
+        // Добавляем хеш в URL
+        window.location.hash = id;
+    });
+
+    peer.on('connection', (connection) => {
+        if (isConnected) {
+            connection.close();
+            return;
+        }
+        conn = connection;
+        isInitiator = false;
+        setupConnection();
+        startHeartbeat();
+        
+        if (document.getElementById('homePage').style.display !== 'none') {
+            switchToChatMode(conn.peer);
+        }
+    });
+
+    peer.on('error', (err) => {
+        console.error('Peer error:', err);
+        const idElement = document.getElementById('myPeerId');
+        if (!idElement) return;
+        
+        switch(err.type) {
+            case 'peer-unavailable':
+                showError('Собеседник не найден');
+                break;
+            case 'server-error':
+                idElement.textContent = 'Ошибка сервера';
+                break;
+            case 'network':
+                idElement.textContent = 'Ошибка сети';
+                break;
+            default:
+                idElement.textContent = 'Ошибка';
+        }
+    });
+
+    peer.on('disconnected', () => {
+        const idElement = document.getElementById('myPeerId');
+        if (idElement) idElement.textContent = 'Переподключение...';
+        peer.reconnect();
+    });
 }
 
 function initPeer(roomId = null) {
@@ -114,7 +180,6 @@ function initPeer(roomId = null) {
         setupConnection();
         startHeartbeat();
         
-        // Автоматически переключаем в чат, если кто-то подключился к нам
         if (document.getElementById('homePage').style.display !== 'none') {
             switchToChatMode(conn.peer);
         }
@@ -224,7 +289,6 @@ function setupConnection() {
                 }
                 break;
             case 'pong':
-                // Соединение активно
                 break;
         }
     });
@@ -245,7 +309,6 @@ function setupConnection() {
     isConnected = true;
 }
 
-// Diffie-Hellman обмен ключами
 async function initiateKeyExchange() {
     try {
         const keyPair = await crypto.subtle.generateKey(
@@ -314,7 +377,6 @@ async function handleDHPublicKey(publicKeyArray) {
     }
 }
 
-// Шифрование сообщений
 async function encryptMessage(text) {
     if (!sharedSecret) return text;
     
@@ -366,7 +428,6 @@ function handleIncomingMessage(data) {
     });
 }
 
-// Отправка сообщений
 async function sendMessage() {
     const input = document.getElementById('messageInput');
     const message = input.value.trim();
@@ -480,7 +541,6 @@ function stopHeartbeat() {
     }
 }
 
-// Очистка при уходе со страницы
 window.addEventListener('beforeunload', () => {
     cleanupConnection();
 });
