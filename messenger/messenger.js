@@ -18,7 +18,7 @@ function showChatError(message) {
     const errorEl = document.getElementById('chatErrorMessage');
     if (!errorEl) return;
     errorEl.textContent = message;
-    setTimeout(() => { errorEl.textContent = ''; }, 3000);
+    setTimeout(() => { errorEl.textContent = ''; }, 5000);
 }
 
 function extractPeerId(input) {
@@ -50,6 +50,8 @@ window.addEventListener('hashchange', handleHashChange);
 // Инициализация при загрузке
 const hash = window.location.hash.substring(1);
 if (hash) {
+    document.getElementById('homePage').style.display = 'none';
+    document.getElementById('chatPage').style.display = 'block';
     joinRoom(hash);
 } else {
     showHomePage();
@@ -109,6 +111,11 @@ function initPeerAndRedirect() {
 
     peer.on('connection', (connection) => {
         if (isConnected) {
+            connection.close();
+            return;
+        }
+        // Проверяем, что это не подключение к самому себе
+        if (connection.peer === myPeerId) {
             connection.close();
             return;
         }
@@ -183,6 +190,11 @@ function initPeer(roomId = null) {
             connection.close();
             return;
         }
+        // Проверяем, что это не подключение к самому себе
+        if (connection.peer === myPeerId) {
+            connection.close();
+            return;
+        }
         conn = connection;
         isInitiator = false;
         setupConnection();
@@ -221,6 +233,12 @@ function initPeer(roomId = null) {
 }
 
 function connectToRoom(roomId) {
+    // Не подключаемся к самому себе
+    if (roomId === myPeerId) {
+        showChatError('Нельзя подключиться к самому себе');
+        return;
+    }
+    
     document.getElementById('chatPeerId').textContent = roomId;
     conn = peer.connect(roomId, { reliable: true });
     isInitiator = true;
@@ -308,6 +326,7 @@ function setupConnection() {
         
         if (!isGoingHome && document.getElementById('chatPage').style.display === 'block') {
             showChatError('Собеседник отключился');
+            // Не делаем автоматический переход домой
         }
     });
 
@@ -502,29 +521,9 @@ function copyMyId() {
 
 function goBack(event) {
     event.preventDefault();
-    if (isConnected) {
-        isGoingHome = true;
-        stopHeartbeat();
-        if (conn) {
-            conn.close();
-            conn = null;
-        }
-        isConnected = false;
-    }
-    if (peer && !peer.destroyed) {
-        peer.destroy();
-        peer = null;
-    }
-    sharedSecret = null;
-    isInitiator = false;
-    window.dhKeyPair = null;
-    myPeerId = null;
-    
-    document.getElementById('homePage').style.display = 'block';
-    document.getElementById('chatPage').style.display = 'none';
-    document.getElementById('remotePeerId').value = '';
-    document.getElementById('errorMessage').textContent = '';
-    document.getElementById('chatErrorMessage').textContent = '';
+    isGoingHome = true;
+    cleanupConnection();
+    showHomePage();
     
     if (window.location.hash) {
         history.replaceState(null, '', window.location.pathname);
@@ -534,29 +533,9 @@ function goBack(event) {
 }
 
 function disconnectAndGoHome() {
-    if (isConnected) {
-        isGoingHome = true;
-        stopHeartbeat();
-        if (conn) {
-            conn.close();
-            conn = null;
-        }
-        isConnected = false;
-    }
-    if (peer && !peer.destroyed) {
-        peer.destroy();
-        peer = null;
-    }
-    sharedSecret = null;
-    isInitiator = false;
-    window.dhKeyPair = null;
-    myPeerId = null;
-    
-    document.getElementById('homePage').style.display = 'block';
-    document.getElementById('chatPage').style.display = 'none';
-    document.getElementById('remotePeerId').value = '';
-    document.getElementById('errorMessage').textContent = '';
-    document.getElementById('chatErrorMessage').textContent = '';
+    isGoingHome = true;
+    cleanupConnection();
+    showHomePage();
     
     if (window.location.hash) {
         history.replaceState(null, '', window.location.pathname);
@@ -582,6 +561,7 @@ function cleanupConnection() {
     sharedSecret = null;
     isInitiator = false;
     window.dhKeyPair = null;
+    myPeerId = null;
 }
 
 function startHeartbeat() {
