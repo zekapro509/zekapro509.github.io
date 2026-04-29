@@ -11,14 +11,12 @@ function showError(message) {
     const errorEl = document.getElementById('errorMessage');
     if (!errorEl) return;
     errorEl.textContent = message;
-    setTimeout(() => { errorEl.textContent = ''; }, 3000);
 }
 
 function showChatError(message) {
     const errorEl = document.getElementById('chatErrorMessage');
     if (!errorEl) return;
     errorEl.textContent = message;
-    setTimeout(() => { errorEl.textContent = ''; }, 5000);
 }
 
 function extractPeerId(input) {
@@ -70,7 +68,7 @@ function joinRoom(roomId) {
     document.getElementById('homePage').style.display = 'none';
     document.getElementById('chatPage').style.display = 'block';
     document.getElementById('chatPeerId').textContent = roomId;
-    document.getElementById('messagesBox').innerHTML = '<div class="empty-chat">Сообщений пока нет</div>';
+    document.getElementById('messagesBox').innerHTML = '<div class="empty-chat">Ожидание собеседника...</div>';
     
     initPeer(roomId);
 }
@@ -173,6 +171,12 @@ function initPeer(roomId = null) {
         }
     };
 
+    // Если есть хеш, используем его как ID
+    const hash = window.location.hash.substring(1);
+    if (hash && !roomId) {
+        roomId = hash;
+    }
+
     peer = new Peer(peerId, peerConfig);
 
     peer.on('open', (id) => {
@@ -180,7 +184,7 @@ function initPeer(roomId = null) {
         const idElement = document.getElementById('myPeerId');
         if (idElement) idElement.textContent = id;
         
-        if (roomId) {
+        if (roomId && roomId !== id) {
             connectToRoom(roomId);
         }
     });
@@ -212,7 +216,7 @@ function initPeer(roomId = null) {
         
         switch(err.type) {
             case 'peer-unavailable':
-                showError('Собеседник не найден');
+                showChatError('Собеседник не найден');
                 break;
             case 'server-error':
                 idElement.textContent = 'Ошибка сервера';
@@ -247,6 +251,7 @@ function connectToRoom(roomId) {
         setupConnection();
         startHeartbeat();
         initiateKeyExchange();
+        document.getElementById('messagesBox').innerHTML = '<div class="empty-chat">Сообщений пока нет</div>';
     });
 
     conn.on('error', () => {
@@ -326,7 +331,6 @@ function setupConnection() {
         
         if (!isGoingHome && document.getElementById('chatPage').style.display === 'block') {
             showChatError('Собеседник отключился');
-            // Не делаем автоматический переход домой
         }
     });
 
