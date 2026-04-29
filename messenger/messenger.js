@@ -28,18 +28,18 @@ function extractPeerId(input) {
 
 // Обработка хеша
 function handleHashChange() {
-    const hash = window.location.hash.substring(1);
-    
     if (isGoingHome) {
         isGoingHome = false;
         return;
     }
     
+    const hash = window.location.hash.substring(1);
+    
     if (!hash) {
         cleanupConnection();
         showHomePage();
         initPeerAndRedirect();
-    } else if (hash !== myPeerId) {
+    } else if (hash !== myPeerId && !isConnected) {
         cleanupConnection();
         joinRoom(hash);
     }
@@ -60,6 +60,8 @@ function showHomePage() {
     document.getElementById('homePage').style.display = 'block';
     document.getElementById('chatPage').style.display = 'none';
     document.getElementById('remotePeerId').value = '';
+    document.getElementById('errorMessage').textContent = '';
+    document.getElementById('chatErrorMessage').textContent = '';
 }
 
 function joinRoom(roomId) {
@@ -100,9 +102,9 @@ function initPeerAndRedirect() {
         const idElement = document.getElementById('myPeerId');
         if (idElement) idElement.textContent = id;
         
-        // Добавляем хеш в URL с флагом
-        isGoingHome = false;
-        window.location.hash = id;
+        if (!isGoingHome) {
+            window.location.hash = id;
+        }
     });
 
     peer.on('connection', (connection) => {
@@ -304,12 +306,8 @@ function setupConnection() {
         isConnected = false;
         conn = null;
         
-        if (document.getElementById('chatPage').style.display === 'block') {
+        if (!isGoingHome && document.getElementById('chatPage').style.display === 'block') {
             showChatError('Собеседник отключился');
-            setTimeout(() => { 
-                isGoingHome = true;
-                disconnectAndGoHome();
-            }, 500);
         }
     });
 
@@ -502,10 +500,69 @@ function copyMyId() {
     });
 }
 
+function goBack(event) {
+    event.preventDefault();
+    if (isConnected) {
+        isGoingHome = true;
+        stopHeartbeat();
+        if (conn) {
+            conn.close();
+            conn = null;
+        }
+        isConnected = false;
+    }
+    if (peer && !peer.destroyed) {
+        peer.destroy();
+        peer = null;
+    }
+    sharedSecret = null;
+    isInitiator = false;
+    window.dhKeyPair = null;
+    myPeerId = null;
+    
+    document.getElementById('homePage').style.display = 'block';
+    document.getElementById('chatPage').style.display = 'none';
+    document.getElementById('remotePeerId').value = '';
+    document.getElementById('errorMessage').textContent = '';
+    document.getElementById('chatErrorMessage').textContent = '';
+    
+    if (window.location.hash) {
+        history.replaceState(null, '', window.location.pathname);
+    }
+    
+    initPeerAndRedirect();
+}
+
 function disconnectAndGoHome() {
-    cleanupConnection();
-    isGoingHome = true;
-    window.location.hash = '';
+    if (isConnected) {
+        isGoingHome = true;
+        stopHeartbeat();
+        if (conn) {
+            conn.close();
+            conn = null;
+        }
+        isConnected = false;
+    }
+    if (peer && !peer.destroyed) {
+        peer.destroy();
+        peer = null;
+    }
+    sharedSecret = null;
+    isInitiator = false;
+    window.dhKeyPair = null;
+    myPeerId = null;
+    
+    document.getElementById('homePage').style.display = 'block';
+    document.getElementById('chatPage').style.display = 'none';
+    document.getElementById('remotePeerId').value = '';
+    document.getElementById('errorMessage').textContent = '';
+    document.getElementById('chatErrorMessage').textContent = '';
+    
+    if (window.location.hash) {
+        history.replaceState(null, '', window.location.pathname);
+    }
+    
+    initPeerAndRedirect();
 }
 
 function cleanupConnection() {
@@ -534,7 +591,7 @@ function startHeartbeat() {
             conn.send({ type: 'ping' });
         } else {
             stopHeartbeat();
-            if (isConnected) {
+            if (isConnected && !isGoingHome) {
                 showChatError('Соединение потеряно');
                 isConnected = false;
             }
