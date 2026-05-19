@@ -47,12 +47,12 @@
                             container.appendChild(article);
                         });
                     } else {
-                        container.innerHTML = '<p>Новостей пока нет.</p>';
+                        container.innerHTML = '<p>Новостей пока нет</p>';
                     }
                 })
                 .catch(function(error) {
                     console.error('Ошибка загрузки новостей:', error);
-                    container.innerHTML = '<p>Не удалось загрузить новости.</p>';
+                    container.innerHTML = '<p>Не удалось загрузить новости</p>';
                 });
         }
         
