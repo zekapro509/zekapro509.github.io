@@ -3,89 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OptiPotato — TLC zekapro509</title>
+    <title>Выбор версии OptiPotato — TLC zekapro509</title>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../style.css">
-    <style>
-        .optipotato-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .optipotato-icon {
-            font-size: 48px;
-            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));
-        }
-        .mod-list {
-            background-color: #f5f5f5;
-            padding: 25px;
-            border-radius: 20px;
-            text-align: left;
-            max-width: 600px;
-            margin: 20px auto;
-            border: 1px solid #e0e0e0;
-        }
-        .mod-list h3 {
-            color: #000000;
-            margin-top: 0;
-            margin-bottom: 15px;
-            font-weight: 700;
-            font-size: 22px;
-        }
-        .note {
-            font-size: 13px;
-            color: #999999;
-            margin-top: 10px;
-            font-style: italic;
-        }
-    </style>
 </head>
 <body>
     <a href="../" class="back-btn" aria-label="Назад">←</a>
-
-    <div class="optipotato-header">
-        <span class="optipotato-icon">🥔</span>
-        <h1>OptiPotato</h1>
-        <span class="optipotato-icon">⚡</span>
+    <h1>OptiPotato</h1>
+    <p>Выберите версию Minecraft</p>
+    
+    <div class="buttons">
+        <a href="optipotato-1.16.5/" class="btn">1.16.5</a>
+        <a href="optipotato-1.20.1/" class="btn">1.20.1</a>
     </div>
-    <p>Оптимизационная сборка для Minecraft 1.16.5 (Fabric)<br>Увеличивает FPS и стабильность игры</p>
-
-    <div class="winpe-info">
-        <div class="winpe-version">
-            <h3>Версия: 1.1</h3>
-            <p>Minecraft: 1.16.5</p>
-            <p>Загрузчик: Fabric</p>
-        </div>
-        <div class="winpe-features">
-            <h3>Моды в составе:</h3>
-            <ul>
-                <li>Fabric API</li>
-                <li>Sodium</li>
-                <li>Sodium Extra</li>
-                <li>Reese's Sodium Options</li>
-                <li>Lithium</li>
-                <li>Phosphor</li>
-                <li>Iris</li>
-                <li>OK Zoomer</li>
-                <li>Blur</li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="mod-list">
-        <h3>Рекомендуемые JVM аргументы:</h3>
-        <code style="font-size: 12px; word-break: break-all; display: block; background: #e8e8e8; padding: 12px; border-radius: 12px;">-Xmx2G -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=50 -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+AlwaysPreTouch</code>
-    </div>
-
-    <div class="download-section">
-        <a href="https://drive.google.com/file/d/1qqE99oDtJ-_fhwFcCfdXNV5crevMvJve/view?usp=sharing" class="btn" target="_blank">
-            Скачать OptiPotato
-        </a>
-        <p class="note">Ссылка на Google Drive</p>
-    </div>
-
-    <script src="../js/browser-check.js"></script>
 </body>
 </html>
